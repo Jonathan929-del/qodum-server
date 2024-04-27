@@ -78,7 +78,10 @@ router.get('/student/send-otp', async (req, res) => {
 
 
         // Admission number validation and fetching student
-        if(!adm_no) res.status(409).send('Admission number not provided');
+        if(!adm_no) {
+            res.send('Admission number not provided');
+            return;
+        };
         const studentRes = await AdmittedStudent.findOne({'student.adm_no':adm_no});
     
 
@@ -90,7 +93,8 @@ router.get('/student/send-otp', async (req, res) => {
             if(!studentRes) errors.student = 'Student not found';
             otp = '';
             student = {};
-            res.status(400).json(errors);
+            res.json(errors);
+            return;
         };
 
 
