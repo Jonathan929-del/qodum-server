@@ -33,9 +33,12 @@ router.post('/school', async (req, res) => {
 
         // Validations
         const {school_no} = req.body;
+        if(!school_no){
+            res.json(400).send('No school number provided');
+        };
         const school = await School.findOne({school_no});
         if(!school){
-            res.send('Not found');
+            res.json(404).send('Not found');
             return;
         };
 
