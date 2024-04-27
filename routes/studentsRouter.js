@@ -79,7 +79,7 @@ router.post('/student/send-otp', async (req, res) => {
 
         // Admission number validation and fetching student
         if(!adm_no) {
-            res.send('Admission number was not provided');
+            res.send('Admission number is required');
             return;
         };
         const studentRes = await AdmittedStudent.findOne({'student.adm_no':adm_no});
