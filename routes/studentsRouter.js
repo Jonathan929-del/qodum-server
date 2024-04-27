@@ -120,7 +120,7 @@ router.post('/student/send-otp', async (req, res) => {
 
 
         // Response
-        res.status(200).send('OTP sent');
+        res.status(200).send(studentRes);
 
     } catch (err) {
         res.status(500).json(err);
