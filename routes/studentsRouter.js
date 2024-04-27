@@ -79,18 +79,21 @@ router.post('/student/send-otp', async (req, res) => {
 
         // Admission number validation and fetching student
         if(!adm_no) {
-            res.send('Admission number not provided');
+            res.send('Admission number was not provided');
             return;
         };
         const studentRes = await AdmittedStudent.findOne({'student.adm_no':adm_no});
-    
+        if(!studentRes){
+            res.send('No students found with this admission number');
+            return;
+        };
+
 
         // Validations
         const existingUser = await AppStudent.findOne({adm_no});
         const {errors, valid} = validateAdmNo(adm_no);
         if(!valid || existingUser || !studentRes){
             if(existingUser) errors.student = 'Student already registered';
-            if(!studentRes) errors.student = 'Student not found';
             otp = '';
             student = {};
             res.json(errors);
