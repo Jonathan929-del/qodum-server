@@ -95,7 +95,7 @@ router.get('/student/send-otp', async (req, res) => {
 
 
         // Sending SMS
-        const generateOTP = studentRes.student.mobile;
+        const generateOTP = 111111;
         // const generateOTP = Math.random().toString().substr(2, 6);
 
 
