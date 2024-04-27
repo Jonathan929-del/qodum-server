@@ -36,7 +36,7 @@ router.post('/school', async (req, res) => {
         if(school){
             res.status(200).json(school);
         }else{
-            res.status(400).json('No school found with this school number');
+            res.send('No school found with this school number');
         }
 
     } catch (err) {
