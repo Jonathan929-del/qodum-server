@@ -30,14 +30,18 @@ router.get('/', async (req, res) => {
 // Fetching school by school no.
 router.post('/school', async (req, res) => {
     try {
+
+        // Validations
         const {school_no} = req.body;
         const school = await School.findOne({school_no});
-
-        if(school){
-            res.status(200).json(school);
-        }else{
+        if(!school){
             res.send('Not found');
-        }
+            return;
+        };
+
+
+        // Response
+        res.status(200).json(school);
 
     } catch (err) {
         res.status(500).json(err);
