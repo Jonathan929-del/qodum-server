@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
 
 // Fetching school by school no.
-router.get('/school', async (req, res) => {
+router.post('/school', async (req, res) => {
     try {
         const {school_no} = req.body;
         const school = await School.findOne({school_no});
