@@ -70,7 +70,7 @@ router.post('/send-sms', async (req, res) => {
 
 
 // Fetching student by adm no and sending OTP to the registered phone number
-router.get('/student/send-otp', async (req, res) => {
+router.post('/student/send-otp', async (req, res) => {
     try {
 
         // Admission number
@@ -129,7 +129,7 @@ router.get('/student/send-otp', async (req, res) => {
 
 
 // Check OTP
-router.get('/student/check-otp', async (req, res) => {
+router.post('/student/check-otp', async (req, res) => {
     try {
 
         // Request body
