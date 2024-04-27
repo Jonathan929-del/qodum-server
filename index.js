@@ -5,7 +5,8 @@ import morgan from 'morgan';
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import usersRouter from './routes/usersRouter.js';
+import schoolsRouter from './routes/schoolsRouter.js';
+import studentsRouter from './routes/studentsRouter.js';
 
 
 
@@ -25,7 +26,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 
 
 // Routes
-app.use('/users', usersRouter);
+app.use('/students', studentsRouter);
+app.use('/schools', schoolsRouter);
 
 
 
@@ -33,6 +35,9 @@ app.use('/users', usersRouter);
 
 // Database Connect
 mongoose.connect(process.env.MONGO_DB).then(() => console.log('Connected to the database')).catch(err => console.log(err));
+
+
+
 
 
 // Server Port
