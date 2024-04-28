@@ -140,9 +140,9 @@ router.post('/student/check-otp', async (req, res) => {
         
         
         // Validations
+        if(!otp) res.send('OTP timeout');
         const isOtpsEqual = the_otp === otp;
         if(!the_otp) res.send('OTP not provided');
-        if(!otp) res.send('OTP timeout');
         if(!isOtpsEqual) res.send("OTPs don't match");
 
 
@@ -155,7 +155,7 @@ router.post('/student/check-otp', async (req, res) => {
 
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.message);
     }
 });
 
