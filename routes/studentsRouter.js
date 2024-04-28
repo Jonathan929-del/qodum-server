@@ -237,7 +237,7 @@ router.post('/student/register', async (req, res) => {
         
         // Generating token
         const token = signToken(newStudent);
-        res.status(201).send({
+        res.status(201).json({
             ...newStudent._doc,
             token
         });
