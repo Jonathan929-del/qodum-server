@@ -262,15 +262,20 @@ router.post('/student/login', async (req, res) => {
         const {adm_no, password} = req.body;
         const {errors, valid} = validateLoginInputs(adm_no, password);
         const searchedStudent = await AppStudent.findOne({adm_no});
-        if(!valid) res.status(400).json(errors);
+        if(!valid) {
+            res.json(errors);
+            return;
+        };
         if(!searchedStudent){
-            errors.adm_no = 'Student not found';
-            res.status(400).json(errors);
+            errors.adm_no = 'Wrong credentials.';
+            res.json(errors);
+            return;
         };
         const match = bcrypt.compareSync(password, searchedStudent.password);
         if(!match){
-            errors.password = 'Wrong credentials';
-            res.status(400).json(errors);
+            errors.adm_no = 'Wrong credentials.';
+            res.json(errors);
+            return;
         };
 
 ;        
