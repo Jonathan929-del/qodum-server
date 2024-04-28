@@ -140,10 +140,19 @@ router.post('/student/check-otp', async (req, res) => {
         
         
         // Validations
-        if(!otp) res.send('OTP timeout');
+        if(!otp){
+            res.send('OTP timeout');
+            return;
+        };
         const isOtpsEqual = the_otp === otp;
-        if(!the_otp) res.send('OTP not provided');
-        if(!isOtpsEqual) res.send("OTPs don't match");
+        if(!the_otp){
+            res.send('OTP not provided');
+            return;
+        };
+        if(!isOtpsEqual){
+            res.send("OTPs don't match");
+            return;
+        };
 
 
         // Setting is otp to be verified
