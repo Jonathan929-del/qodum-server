@@ -178,11 +178,11 @@ router.post('/student/register', async (req, res) => {
 
         // Checking if OTP has expired
         if(!otp){
-            res.status(400).send('OTP timeout');
+            res.send('OTP timeout');
             return;
         };
         if(!isOTPVerified){
-            res.status(400).send('OTP not verified');
+            res.send('OTP not verified');
             return;
         };
 
@@ -190,7 +190,10 @@ router.post('/student/register', async (req, res) => {
         // Validations
         const {password, confirm_password} = req.body;
         const {errors, valid} = validateRegisterInputs(password, confirm_password);
-        if(!valid) res.status(400).json(errors);
+        if(!valid){
+            res.send(errors);
+            return;
+        };
         
         
         // Registering the student
