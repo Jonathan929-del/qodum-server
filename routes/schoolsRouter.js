@@ -13,11 +13,32 @@ const router = express.Router();
 
 
 
-// Fetching schools
-router.get('/', async (req, res) => {
+// Searching schools by school name
+router.get('/school', async (req, res) => {
     try {
-        const schools = await School.find();
+
+        // Body
+        const {school_name} = req.body;
+
+
+        // Validation
+        if(!school_name){
+            res.send('No school name provided');
+            return;
+        };
+
+
+        // School name regex
+        const schoolNameRegex = new RegExp(school_name, 'i');
+
+
+        // Schools
+        const schools = await School.find({school_name:{$regex:schoolNameRegex}});
+
+
+        // Response
         res.status(200).json(schools);
+
     } catch (err) {
         res.status(500).json(err);
     }
