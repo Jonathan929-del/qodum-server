@@ -14,7 +14,7 @@ const router = express.Router();
 
 
 // Searching schools by school name
-router.get('/school', async (req, res) => {
+router.post('/find', async (req, res) => {
     try {
 
         // Body
