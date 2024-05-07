@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import schoolsRouter from './routes/schoolsRouter.js';
 import studentsRouter from './routes/studentsRouter.js';
+import teachersRouter from './routes/teachersRouter.js';
 
 
 
@@ -27,6 +28,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 
 // Routes
 app.use('/students', studentsRouter);
+app.use('/teachers', teachersRouter);
 app.use('/schools', schoolsRouter);
 
 

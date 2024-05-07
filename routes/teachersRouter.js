@@ -1,9 +1,9 @@
 // Imports
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import AppStudent from '../models/AppStudent.js';
-import signToken from '../utils/signToken/studentJwt.js';
-import AdmittedStudent from '../models/AdmittedStudent.js';
+import Teacher from '../models/Teacher.js';
+import AppTeacher from '../models/AppTeacher.js';
+import signToken from '../utils/signToken/teacherJwt.js'
 import {validateAdmNo, validateLoginInputs, validateRegisterInputs} from '../validations/auth.js';
 
 
@@ -19,40 +19,40 @@ const router = express.Router();
 
 // The OTP
 let otp;
-let student;
+let teacher;
 let isOTPVerified = false;
 
 
 
 
 
-// Fetching student by adm no and sending OTP to the registered phone number
-router.post('/student/send-otp', async (req, res) => {
+// Fetching teacher by adm no and sending OTP to the registered phone number
+router.post('/teacher/send-otp', async (req, res) => {
     try {
 
         // Admission number
         const {adm_no} = req.body;
 
 
-        // Admission number validation and fetching student
+        // Admission number validation and fetching teacher
         if(!adm_no) {
             res.send('Admission number is required');
             return;
         };
-        const studentRes = await AdmittedStudent.findOne({'student.adm_no':adm_no});
-        if(!studentRes){
-            res.send('No students found with this admission number');
+        const teacherRes = await Teacher.findOne({adm_no});
+        if(!teacherRes){
+            res.send('No teachers found with this admission number');
             return;
         };
 
 
         // Validations
-        const existingUser = await AppStudent.findOne({adm_no});
+        const existingUser = await AppTeacher.findOne({adm_no});
         const {errors, valid} = validateAdmNo(adm_no);
-        if(!valid || existingUser || !studentRes){
-            if(existingUser) errors.student = 'Student already registered';
+        if(!valid || existingUser || !teacherRes){
+            if(existingUser) errors.adm_no = 'Teacher already registered';
             otp = '';
-            student = {};
+            teacher = {};
             res.json(errors);
             return;
         };
@@ -65,19 +65,19 @@ router.post('/student/send-otp', async (req, res) => {
 
         // Setting OTP
         otp = generateOTP;
-        student = studentRes;
+        teacher = teacherRes;
 
 
         // OTP timeount
         setTimeout(() => {
             otp = '';
-            student = '';
+            teacher = '';
             isOTPVerified = false;
         }, 3600000);
 
 
         // Response
-        res.status(200).send(studentRes);
+        res.status(200).send(teacherRes);
 
     } catch (err) {
         res.status(500).json(err);
@@ -89,7 +89,7 @@ router.post('/student/send-otp', async (req, res) => {
 
 
 // Check OTP
-router.post('/student/check-otp', async (req, res) => {
+router.post('/teacher/check-otp', async (req, res) => {
     try {
 
         // Request body
@@ -129,8 +129,8 @@ router.post('/student/check-otp', async (req, res) => {
 
 
 
-// Register student
-router.post('/student/register', async (req, res) => {
+// Register teacher
+router.post('/teacher/register', async (req, res) => {
     try {
 
         // Checking if OTP has expired
@@ -153,49 +153,47 @@ router.post('/student/register', async (req, res) => {
         };
         
         
-        // Registering the student
+        // Registering the teacher
         const hashedPassword = bcrypt.hashSync(password);
-        const newStudent = await AppStudent.create({
-            adm_no:student.student.adm_no,
+        const newTeacher = await AppTeacher.create({
+            type:'Teacher',
+            background_image:'',
+            image:teacher.image,
+            name:teacher.name,
+            adm_no:teacher.adm_no,
             password:hashedPassword,
-            
-            student:{
-                name:student.student.name,
-                class_name:student.student.class_name,
-                image:student.student.image,
-                background_image:'',
-                doa:student.student.doa,
-                dob:student.student.dob,
-                pen_no:student.student.pen_no,
-                blood_group:student.student.blood_group,
-                house:student.student.house,
-                address:student.student.h_no_and_streets,
-                contact_person_mobile:student.student.contact_person_mobile,
-                roll_no:student.student.roll_no,
-                aadhar_card_no:student.student.aadhar_card_no
-            },
-            
-            parents:{
-                father:{
-                    father_name:student.parents.father.father_name,
-                },
-                mother:{
-                    mother_name:student.parents.mother.mother_name,
-                }
-            }
+            mobile:teacher.mobile,
+            dob:teacher.dob,
+            doj:teacher.doj,
+            marital_status:teacher.marital_status,
+            father_name:teacher.father_name,
+            doa:teacher.doa,
+            gender:teacher.gender,
+            nationality:teacher.nationality,
+            religion:teacher.religion,
+            qualification:teacher.qualification,
+            address:teacher.address,
+            permenant_address:teacher.permenant_address,
+            aadhar_card_no:teacher.aadhar_card_no,
+            pan_card_no:teacher.pan_card_no,
+            bank_account_no:teacher.bank_account_no,
+            uan_number:teacher.uan_number,
+            contact_nos:teacher.contact_nos,
+            father_contact_no:teacher.father_contact_no,
+            email:teacher.email
         });
         
         
         // Resetting OTP
         otp = '';
-        student = '';
+        teacher = '';
         isOTPVerified = false;
         
         
         // Generating token
-        const token = signToken(newStudent);
+        const token = signToken(newTeacher);
         res.status(201).json({
-            ...newStudent._doc,
+            ...newTeacher._doc,
             token
         });
 
@@ -211,36 +209,35 @@ router.post('/student/register', async (req, res) => {
 
 
 
-// login student
-router.post('/student/login', async (req, res) => {
+// login teacher
+router.post('/teacher/login', async (req, res) => {
     try {
 
         // Validations
         const {adm_no, password} = req.body;
         const {errors, valid} = validateLoginInputs(adm_no, password);
-        const searchedStudent = await AppStudent.findOne({adm_no});
+        const searchedTeacher = await AppTeacher.findOne({adm_no});
         if(!valid) {
             res.json(errors);
             return;
         };
-        if(!searchedStudent){
+        if(!searchedTeacher){
             errors.adm_no = 'Wrong credentials.';
             res.json(errors);
             return;
         };
-        const match = bcrypt.compareSync(password, searchedStudent.password);
+        const match = bcrypt.compareSync(password, searchedTeacher.password);
         if(!match){
             errors.adm_no = 'Wrong credentials.';
             res.json(errors);
             return;
         };
 
-;        
-        
-        // loging the student
-        const token = signToken(searchedStudent);
+
+        // loging the teacher
+        const token = signToken(searchedTeacher);
         res.status(200).json({
-            ...searchedStudent._doc,
+            ...searchedTeacher._doc,
             token
         });
 
