@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 // App student schema
 const AppStudentSchema = mongoose.Schema({
     // App student data
+    type:{type:String},
     adm_no:{type:String, unique:true, required:true},
     password:{type:String, required:true},
     

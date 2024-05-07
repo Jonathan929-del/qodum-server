@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 // Sign jwt token
 const signToken = student => {
     return jwt.sign({
+        type:student.type,
         id:student._id,
         adm_no:student.student.adm_no,
 

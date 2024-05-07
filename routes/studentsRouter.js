@@ -156,6 +156,7 @@ router.post('/student/register', async (req, res) => {
         // Registering the student
         const hashedPassword = bcrypt.hashSync(password);
         const newStudent = await AppStudent.create({
+            type:'Student',
             adm_no:student.student.adm_no,
             password:hashedPassword,
             
