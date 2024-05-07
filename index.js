@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import schoolsRouter from './routes/schoolsRouter.js';
 import studentsRouter from './routes/studentsRouter.js';
 import teachersRouter from './routes/teachersRouter.js';
+import assignemtsRouter from './routes/assignmentsRouter.js';
 
 
 
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use('/students', studentsRouter);
 app.use('/teachers', teachersRouter);
 app.use('/schools', schoolsRouter);
+app.use('/assignments', assignemtsRouter);
 
 
 
