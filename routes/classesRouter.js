@@ -13,12 +13,12 @@ const router = express.Router();
 
 
 
-// Fetching classes
-router.get('/', async (req, res) => {
+// Fetching classes names
+router.get('/names', async (req, res) => {
     try {
 
         // Classes
-        const classes = await Class.find();
+        const classes = await Class.find({}, {class_name:1});
 
 
         // Response
