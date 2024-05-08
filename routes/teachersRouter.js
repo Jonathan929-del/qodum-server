@@ -160,6 +160,7 @@ router.post('/teacher/register', async (req, res) => {
             background_image:'',
             image:teacher.image,
             name:teacher.name,
+            class_name:teacher.class_name,
             adm_no:teacher.adm_no,
             password:hashedPassword,
             mobile:teacher.mobile,
@@ -180,7 +181,8 @@ router.post('/teacher/register', async (req, res) => {
             uan_number:teacher.uan_number,
             contact_nos:teacher.contact_nos,
             father_contact_no:teacher.father_contact_no,
-            email:teacher.email
+            email:teacher.email,
+            alternate_email:teacher.alternate_email
         });
         
         

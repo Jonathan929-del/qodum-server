@@ -13,6 +13,7 @@ const signToken = teacher => {
         background_image:teacher.background_image,
         image:teacher.image,
         name:teacher.name,
+        class_name:teacher.class_name,
         adm_no:teacher.adm_no,
         password:teacher.password,
         mobile:teacher.mobile,
@@ -33,7 +34,8 @@ const signToken = teacher => {
         uan_number:teacher.uan_number,
         contact_nos:teacher.contact_nos,
         father_contact_no:teacher.father_contact_no,
-        email:teacher.email
+        email:teacher.email,
+        alternate_email:teacher.alternate_email,
     },
     process.env.SECRET_JWT_KEY,
     {

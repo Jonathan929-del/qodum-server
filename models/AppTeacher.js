@@ -12,6 +12,7 @@ const AppTeacherSchema = new mongoose.Schema(
             background_image:{type:String},
             image:{type:String},
             name:{type:String},
+            class_name:{type:String},
             adm_no:{type:String, required:true, unique:true},
             password:{type:String, required:true},
             mobile:{type:Number},
@@ -32,7 +33,8 @@ const AppTeacherSchema = new mongoose.Schema(
             uan_number:{type:Number},
             contact_nos:{type:Array},
             father_contact_no:{type:Number},
-            email:{type:Number}
+            email:{type:String},
+            alternate_email:{type:String}
         },
         {
             timestamps:true
