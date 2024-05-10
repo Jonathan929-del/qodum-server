@@ -8,6 +8,8 @@ import mongoose from 'mongoose';
 // Assignment schema
 const AssignmentSchema = new mongoose.Schema(
         {
+            creator:{type:String},
+            creator_image:{type:String},
             subject:{type:String, required:true},
             class_name:{type:String, required:true},
             title:{type:String, required:true},
