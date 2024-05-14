@@ -1,7 +1,7 @@
 // Imports
 import express from 'express';
-import {validateCreateAssignment} from '../validations/assignment.js';
 import Assignment from '../models/Assignment.js';
+import {validateCreateAssignment} from '../validations/assignment.js';
 
 
 

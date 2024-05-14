@@ -33,7 +33,7 @@ router.post('/find', async (req, res) => {
 
 
         // Schools
-        const schools = await School.find({school_name:{$regex:schoolNameRegex}});
+        const schools = await School.find({school_name:{$regex:schoolNameRegex}}, {logo:1, school_name:1, school_no:1});
 
 
         // Response
