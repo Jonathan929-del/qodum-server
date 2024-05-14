@@ -46,6 +46,30 @@ router.post('/create', async (req, res) => {
 
 
 
+// Creating assignment
+router.post('/edit', async (req, res) => {
+    try {
+
+        // Body
+        const {id, subject, title, assignment_date, to_be_submitted_on, attachment, assignment, is_allow_student_for_multiple_submission, is_active} = req.body;
+
+
+        // Creating assignment
+        await Assignment.findByIdAndUpdate(id, {subject, title, assignment_date, to_be_submitted_on, attachment, assignment, is_allow_student_for_multiple_submission, is_active});
+
+
+        // Response
+        res.status(201).json('Edited');
+
+    }catch(err){
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Fetching assignments
 router.get('/', async (req, res) => {
     try {
