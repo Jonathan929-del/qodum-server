@@ -46,7 +46,7 @@ router.post('/create', async (req, res) => {
 
 
 
-// Creating assignment
+// Editing assignment
 router.post('/edit', async (req, res) => {
     try {
 
@@ -63,6 +63,29 @@ router.post('/edit', async (req, res) => {
 
     }catch(err){
         res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Deleting assignment
+router.delete('/delete/:id', async (req, res) => {
+    try {
+
+        // Params
+        const {id} = req.params;
+
+        // Assignemts
+        await Assignment.findByIdAndDelete(id);
+
+
+        // Response
+        res.status(200).json('Deleted');
+        
+    }catch(err){
+        res.status(500).json(err);   
     }
 });
 
