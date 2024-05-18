@@ -19,7 +19,16 @@ const AssignmentSchema = new mongoose.Schema(
             assignment:{type:String},
             is_allow_student_for_multiple_submission:{type:Boolean},
             is_active:{type:Boolean},
-            submitted_assignments:{type:Array}
+            // submitted_assignments:{type:Array}
+            submitted_assignments:[{
+                student:{
+                    adm_no:{type:String},
+                    name:{type:String},
+                    roll_no:{type:String}
+                },
+                answer:{type:String},
+                attachment:{type:String}
+            }]
         },
         {
             timestamps:true

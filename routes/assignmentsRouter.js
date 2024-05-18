@@ -114,5 +114,67 @@ router.get('/', async (req, res) => {
 
 
 
+
+// Editing assignment
+router.post('/assignment/submit', async (req, res) => {
+    try {
+
+        // Body
+        const {assignment_id, student, attachment, answer} = req.body;
+
+
+        // Validations
+        if(!assignment_id || !student.adm_no || !student.name || !student.roll_no || !attachment || !answer){
+            const errors = {};
+
+            // Assignment ID
+            if(!assignment_id || assignment_id.trim() === ''){
+                res.json('Please enter assignment ID');
+            };
+
+            // Student admission number
+            if(!student?.adm_no || student?.adm_no?.trim() === ''){
+                res.json('Please enter student admission number');
+            };
+
+            // Student name
+            if(!student?.name || student?.name?.trim() === ''){
+                res.json('Please enter student name');
+            };
+
+            // Student roll number
+            if(!student?.roll_no || student?.roll_no.trim() === ''){
+                res.json('Please enter student roll number');
+            };
+
+            // Attachment
+            if(!attachment || attachment.trim() === ''){
+                res.json('Please enter an attachment');
+            };
+
+            // Answer
+            if(!answer || answer.trim() === ''){
+                res.json('Please enter an answer');
+            };
+
+        };
+
+
+        // Creating assignment
+        await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment}}});
+
+
+        // Response
+        res.status(201).json('Submitted');
+
+    }catch(err){
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
