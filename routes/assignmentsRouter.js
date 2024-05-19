@@ -176,5 +176,30 @@ router.post('/assignment/submit', async (req, res) => {
 
 
 
+// Fetching assignment by id
+router.get('/assignment/:id', async (req, res) => {
+    try {
+
+
+        // Request params
+        const {id} = req.params;
+
+
+        // Assignemts
+        const assignment = await Assignment.findById(id);
+
+
+        // Response
+        res.status(200).json(assignment);
+        
+    }catch(err){
+        res.status(500).json(err);   
+    }
+});
+
+
+
+
+
 // Export
 export default router;
