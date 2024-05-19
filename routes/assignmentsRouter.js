@@ -161,7 +161,7 @@ router.post('/assignment/submit', async (req, res) => {
 
 
         // Creating assignment
-        await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment}}});
+        await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment, created_at:new Date()}}});
 
 
         // Response
