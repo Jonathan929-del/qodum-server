@@ -1,5 +1,5 @@
 // Validate create assignment
-export const validateCreateAssignment = ({subject, class_name, title, attachment, assignment}) => {
+export const validateCreateAssignment = ({subject, class_name, title, attachment, description}) => {
     const errors = {};
 
     // Subject
@@ -18,9 +18,9 @@ export const validateCreateAssignment = ({subject, class_name, title, attachment
     if(attachment.trim() === '' || !attachment){
         errors.attachment = 'Please enter an attachment';
     };
-    // Assignment
-    if(assignment.trim() === '' || !assignment){
-        errors.assignment = 'Please enter an assignment';
+    // Description
+    if(description.trim() === '' || !description){
+        errors.description = 'Please enter description';
     };
     return {
         errors,

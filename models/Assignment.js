@@ -16,7 +16,7 @@ const AssignmentSchema = new mongoose.Schema(
             assignment_date:{type:Date},
             to_be_submitted_on:{type:Date},
             attachment:{type:String},
-            assignment:{type:String},
+            description:{type:String},
             is_allow_student_for_multiple_submission:{type:Boolean},
             is_active:{type:Boolean},
             submitted_assignments:[{
