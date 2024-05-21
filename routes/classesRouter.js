@@ -1,6 +1,7 @@
 // Imports
 import express from 'express';
 import Class from '../models/Class.js';
+import AppStudent from '../models/AppStudent.js';
 
 
 
@@ -23,6 +24,29 @@ router.get('/names', async (req, res) => {
 
         // Response
         res.status(200).json(classes);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Fetching number of students in a class
+router.get('/class/student-count', async (req, res) => {
+    try {
+
+        // Reques body
+        const {class_name} = req.body;
+
+        // Student count
+        const studentCount = await AppStudent.countDocuments({'student.class_name':class_name});
+
+
+        // Response
+        res.status(200).json(studentCount);
 
     } catch (err) {
         res.status(500).json(err);
