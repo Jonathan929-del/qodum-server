@@ -35,7 +35,7 @@ router.get('/names', async (req, res) => {
 
 
 // Fetching number of students in a class
-router.get('/class/student-count', async (req, res) => {
+router.post('/class/student-count', async (req, res) => {
     try {
 
         // Reques body
