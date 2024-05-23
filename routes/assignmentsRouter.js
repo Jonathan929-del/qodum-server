@@ -114,6 +114,38 @@ router.get('/', async (req, res) => {
 
 
 
+// Fetching assignments with class name
+router.post('/class', async (req, res) => {
+    try {
+
+
+        // Request body
+        const {class_name} = req.body;
+
+
+        // Validations
+        if(!class_name){
+            res.send('No class name provided');
+            return;
+        };
+
+
+        // Assignemts
+        const assignments = await Assignment.find({class_name});
+
+
+        // Response
+        res.status(200).json(assignments);
+        
+    }catch(err){
+        res.status(500).json(err);   
+    }
+});
+
+
+
+
+
 
 // Submitting assignment
 router.post('/assignment/submit', async (req, res) => {
