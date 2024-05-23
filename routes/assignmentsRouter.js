@@ -93,13 +93,23 @@ router.delete('/delete/:id', async (req, res) => {
 
 
 
-// Fetching assignments
-router.get('/', async (req, res) => {
+// Fetching assignments with the teacher name
+router.post('/teacher', async (req, res) => {
     try {
+
+        // Request body
+        const {teacher} = req.body;
+
+
+        // Validations
+        if(!teacher){
+            res.send('No teacher name provided');
+            return;
+        };
 
 
         // Assignemts
-        const assignments = await Assignment.find();
+        const assignments = await Assignment.find({creator:teacher});
 
 
         // Response
@@ -117,7 +127,6 @@ router.get('/', async (req, res) => {
 // Fetching assignments with class name
 router.post('/class', async (req, res) => {
     try {
-
 
         // Request body
         const {class_name} = req.body;
