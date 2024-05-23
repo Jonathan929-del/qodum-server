@@ -125,7 +125,6 @@ router.post('/assignment/submit', async (req, res) => {
 
         // Validations
         if(!assignment_id || !student.adm_no || !student.name || !student.roll_no || !attachment || !answer){
-            const errors = {};
 
             // Assignment ID
             if(!assignment_id || assignment_id.trim() === ''){
@@ -160,7 +159,7 @@ router.post('/assignment/submit', async (req, res) => {
         };
 
 
-        // Creating assignment
+        // Submitting report
         await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment, created_at:new Date().toISOString()}}});
 
 
@@ -194,6 +193,71 @@ router.get('/assignment/:id', async (req, res) => {
         
     }catch(err){
         res.status(500).json(err);   
+    }
+});
+
+
+
+
+
+// Submit feedback to submitted report
+router.put('/assignment/feedback', async (req, res) => {
+    try {
+
+        // Body
+        const {assignment_id, submitted_report_id, feedback, grade} = req.body;
+
+
+        // Validations
+        if(!assignment_id || !submitted_report_id || !feedback || !grade){
+
+            // Assignment ID
+            if(!assignment_id || assignment_id.trim() === ''){
+                res.json('Please enter assignment ID');
+            };
+
+            // Submitted Report ID
+            if(!submitted_report_id || submitted_report_id.trim() === ''){
+                res.json('Please enter submitted report ID');
+            };
+
+            // Feedback
+            if(!feedback || feedback.trim() === ''){
+                res.json('Please enter feedback');
+            };
+
+            // Grade
+            if(!grade || grade.trim() === ''){
+                res.json('Please enter grade');
+            };
+
+        };
+
+
+        // Sending feedback
+        const assignment = await Assignment.findOneAndUpdate(
+            {_id:assignment_id, 'submitted_assignments._id':submitted_report_id},
+            {
+                $set: {
+                    'submitted_assignments.$.feedback.feedback':feedback,
+                    'submitted_assignments.$.feedback.grade':grade
+                }
+            },
+            {new:true}
+        );
+
+
+        // No assignment or submitted report validation
+        if (!assignment) {
+            return res.send('Assignment or submitted assignment not found');
+        }
+
+
+        // Response
+        res.status(201).json('Feedback sent');
+
+    }catch(err){
+        res.status(500).json(err.message);
     }
 });
 

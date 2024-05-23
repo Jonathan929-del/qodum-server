@@ -27,7 +27,11 @@ const AssignmentSchema = new mongoose.Schema(
                 },
                 answer:{type:String},
                 attachment:{type:String},
-                created_at:{type:Date}
+                created_at:{type:Date},
+                feedback:{
+                    feedback:{type:String},
+                    grade:{type:String}
+                }
             }]
         },
         {
