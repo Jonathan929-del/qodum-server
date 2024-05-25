@@ -1,4 +1,5 @@
 // Imports
+import cron from 'node-cron';
 import express from 'express';
 import Assignment from '../models/Assignment.js';
 import {validateCreateAssignment} from '../validations/assignment.js';
@@ -299,6 +300,25 @@ router.put('/assignment/feedback', async (req, res) => {
 
     }catch(err){
         res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Setting is active to be false if past last date of submission
+cron.schedule('0 0 * * *', async () => {
+    const currentDate = new Date();
+
+    try{
+        const result = await Assignment.updateMany(
+            {last_date_of_submission:{$lt:currentDate}, is_active:true},
+            {$set:{is_active:false}}
+        );
+        console.log(`${result.nModified} assignments updated successfully`);
+    } catch (error) {
+        console.error('Error updating assignments:', error);
     }
 });
 
