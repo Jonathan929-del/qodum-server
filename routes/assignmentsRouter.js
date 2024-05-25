@@ -19,7 +19,7 @@ router.post('/create', async (req, res) => {
     try {
 
         // Body
-        const {creator, creator_image, subject, class_name, title, assignment_date, to_be_submitted_on, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
+        const {creator, creator_image, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
 
 
         // Validations
@@ -31,7 +31,7 @@ router.post('/create', async (req, res) => {
 
 
         // Creating assignment
-        await Assignment.create({creator, creator_image, subject, class_name, title, assignment_date, to_be_submitted_on, attachment, description, is_allow_student_for_multiple_submission, is_active});
+        await Assignment.create({creator, creator_image, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
 
 
         // Response
@@ -51,11 +51,11 @@ router.post('/edit', async (req, res) => {
     try {
 
         // Body
-        const {id, subject, title, assignment_date, to_be_submitted_on, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
+        const {id, subject, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
 
 
         // Creating assignment
-        await Assignment.findByIdAndUpdate(id, {subject, title, assignment_date, to_be_submitted_on, attachment, description, is_allow_student_for_multiple_submission, is_active});
+        await Assignment.findByIdAndUpdate(id, {subject, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
 
 
         // Response
