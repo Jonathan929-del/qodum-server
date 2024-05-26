@@ -20,7 +20,7 @@ const AppStudentSchema = mongoose.Schema({
         background_image:{type:String},
         doa:{type:Date},
         dob:{type:Date},
-        adm_no:{type:String},
+        email:{type:String},
         pen_no:{type:Number},
         blood_group:{type:String},
         house:{type:String},
