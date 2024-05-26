@@ -19,6 +19,7 @@ const signToken = student => {
             background_image:student.student.background_image,
             doa:student.student.doa,
             dob:student.student.dob,
+            email:student.student.email,
             pen_no:student.student.pen_no,
             blood_group:student.student.blood_group,
             house:student.student.house,
