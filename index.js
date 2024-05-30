@@ -11,6 +11,7 @@ import studentsRouter from './routes/studentsRouter.js';
 import teachersRouter from './routes/teachersRouter.js';
 import subjectsRouter from './routes/subjectsRouter.js';
 import assignemtsRouter from './routes/assignmentsRouter.js';
+import notificationsRouter from './routes/notificationsRouter.js';
 
 
 
@@ -36,6 +37,7 @@ app.use('/schools', schoolsRouter);
 app.use('/assignments', assignemtsRouter);
 app.use('/classes', classesRouter);
 app.use('/subjects', subjectsRouter);
+app.use('/notifications', notificationsRouter);
 
 
 
