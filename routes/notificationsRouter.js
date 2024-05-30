@@ -56,7 +56,7 @@ router.post('/send-notification', async (req, res) => {
 
         // Sending
         await getMessaging().send(message);
-        res.status(200).send('Notification sent successfully to all users');
+        res.status(200).send('Notification sent successfully');
 
     } catch (err) {
         res.status(500).json(err);
