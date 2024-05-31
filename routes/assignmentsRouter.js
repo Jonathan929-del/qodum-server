@@ -166,7 +166,7 @@ router.post('/assignment/submit', async (req, res) => {
 
 
         // Validations
-        if(!assignment_id || !student.adm_no || !student.name || !student.roll_no || !attachment || !answer){
+        if(!assignment_id || !student.adm_no || !student.name || !attachment || !answer){
 
             // Assignment ID
             if(!assignment_id || assignment_id.trim() === ''){
@@ -181,11 +181,6 @@ router.post('/assignment/submit', async (req, res) => {
             // Student name
             if(!student?.name || student?.name?.trim() === ''){
                 res.json('Please enter student name');
-            };
-
-            // Student roll number
-            if(!student?.roll_no || student?.roll_no.trim() === ''){
-                res.json('Please enter student roll number');
             };
 
             // Attachment
