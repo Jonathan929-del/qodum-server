@@ -20,7 +20,7 @@ router.post('/create', async (req, res) => {
     try {
 
         // Body
-        const {creator, creator_image, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
+        const {creator, creator_image, creator_adm_no, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active} = req.body;
 
 
         // Validations
@@ -32,7 +32,7 @@ router.post('/create', async (req, res) => {
 
 
         // Creating assignment
-        await Assignment.create({creator, creator_image, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
+        await Assignment.create({creator, creator_image, creator_adm_no, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
 
 
         // Response
