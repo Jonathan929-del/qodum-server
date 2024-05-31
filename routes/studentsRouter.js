@@ -162,7 +162,7 @@ router.post('/student/register', async (req, res) => {
             
             student:{
                 name:student.student.name,
-                class_name:student.student.class_name,
+                class_name:student.student.class,
                 image:student.student.image,
                 background_image:'',
                 doa:student.student.doa,
