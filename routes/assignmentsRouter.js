@@ -193,6 +193,7 @@ router.post('/assignment/submit', async (req, res) => {
                 res.json('Please enter an answer');
             };
 
+            return;
         };
 
 
