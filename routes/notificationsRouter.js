@@ -114,5 +114,31 @@ router.post('/user-notifications', async (req, res) => {
 
 
 
+// Notifications count
+router.post('/notifications-count', async (req, res) => {
+    try {
+
+        // Request params
+        const {to} = req.body;
+
+
+        // Fetching
+        const notificationsCount = (await db.collection('notifications').where('to', 'in', to).where('viewed', '==', false).get()).size;
+
+
+        // Response
+        res.status(200).json(notificationsCount);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
 // Export
 export default router;
