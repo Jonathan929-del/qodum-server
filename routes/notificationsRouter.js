@@ -34,6 +34,7 @@ const serviceAccount = {
 initializeApp({
     credential:cert(serviceAccount),
 });
+const db = getFirestore();
 
 
 
@@ -60,7 +61,6 @@ router.post('/send-notification', async (req, res) => {
 
     
         // Saving the message to firestore
-        const db = getFirestore();
         await db.collection('notifications').add({
             to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
             title:req.body.title || 'New Notification',
@@ -70,11 +70,41 @@ router.post('/send-notification', async (req, res) => {
         });
 
 
-        // Return
+        // Response
         res.status(200).send('Notification sent successfully');
 
     } catch (err) {
-        res.status(500).json(err.message);
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
+// Get user's notifications
+router.post('/user-notifications', async (req, res) => {
+    try {
+
+        // Request params
+        const {to} = req.body;
+
+
+        // Fetching
+        const snapshot = await db.collection('notifications').where('to', 'in', to).get();
+        const notifications = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+
+        // Response
+        res.status(200).json(notifications);
+
+    } catch (err) {
+        res.status(500).json(err);
     }
 });
 
