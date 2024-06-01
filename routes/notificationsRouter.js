@@ -62,7 +62,7 @@ router.post('/send-notification', async (req, res) => {
         // Saving the message to firestore
         const db = getFirestore();
         await db.collection('notifications').add({
-            adm_no:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
+            to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
             title:req.body.title || 'New Notification',
             body:req.body.body || 'You have a new message.',
             viewed:false,
