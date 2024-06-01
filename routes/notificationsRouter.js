@@ -1,6 +1,7 @@
 // Imports
 import dotenv from 'dotenv';
 import express from 'express';
+import {getFirestore} from 'firebase-admin/firestore';
 import {getMessaging} from 'firebase-admin/messaging';
 import {initializeApp, cert} from 'firebase-admin/app';
 
@@ -53,13 +54,25 @@ router.post('/send-notification', async (req, res) => {
             topic:req.body.topic
         };
 
-
+    
         // Sending
         await getMessaging().send(message);
+
+    
+        // Saving the message to firestore
+        const db = getFirestore();
+        await db.collection('notifications').add({
+            adm_no:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
+            title:req.body.title || 'New Notification',
+            body:req.body.body || 'You have a new message.'
+        });
+
+
+        // Return
         res.status(200).send('Notification sent successfully');
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.message);
     }
 });
 
