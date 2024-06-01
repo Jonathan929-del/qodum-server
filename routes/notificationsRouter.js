@@ -65,6 +65,7 @@ router.post('/send-notification', async (req, res) => {
             adm_no:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
             title:req.body.title || 'New Notification',
             body:req.body.body || 'You have a new message.',
+            viewed:false,
             created_at:new Date()
         });
 
