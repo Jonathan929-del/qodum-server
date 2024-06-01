@@ -140,5 +140,37 @@ router.post('/notifications-count', async (req, res) => {
 
 
 
+// View notifications
+router.post('/view-notifications', async (req, res) => {
+    try {
+
+        // Request params
+        const {notifications_ids} = req.body;
+
+
+        // Updating notifications documents
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('notifications');
+        notifications_ids.forEach(id => {
+            const notificationRef = notificationsCollection.doc(id);
+            batch.update(notificationRef, {viewed:true});
+        });
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Notifications marked as viewed successfully');
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
 // Export
 export default router;
