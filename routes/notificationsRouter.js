@@ -101,8 +101,16 @@ router.post('/user-notifications', async (req, res) => {
         }));
 
 
+        // Separate notifications into viewed and unviewed
+        const unviewed_notifications = notifications.filter(notification => !notification.viewed);
+        const viewed_notifications = notifications.filter(notification => notification.viewed);
+
+
         // Response
-        res.status(200).json(notifications);
+        res.status(200).json({
+            unviewed_notifications,
+            viewed_notifications
+        });
 
     } catch (err) {
         res.status(500).json(err);
