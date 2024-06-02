@@ -50,7 +50,8 @@ router.post('/send-notification', async (req, res) => {
         const message = {
             notification: {
                 title:req.body.title || 'New Notification',
-                body:req.body.body || 'You have a new message.'
+                body:req.body.body || 'You have a new message.',
+                type:req.body.type || 'added_assignment'
             },
             topic:req.body.topic
         };
