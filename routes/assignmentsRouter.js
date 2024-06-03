@@ -198,11 +198,11 @@ router.post('/assignment/submit', async (req, res) => {
 
 
         // Submitting report
-        await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment, created_at:new Date().toISOString()}}});
+        const newAssignment = await Assignment.findByIdAndUpdate(assignment_id, {$push:{submitted_assignments:{student, answer, attachment, created_at:new Date().toISOString()}}}, {new:true});
 
 
         // Response
-        res.status(201).json('Submitted');
+        res.status(201).json(newAssignment);
 
     }catch(err){
         res.status(500).json(err.message);
