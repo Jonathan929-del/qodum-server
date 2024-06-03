@@ -32,11 +32,11 @@ router.post('/create', async (req, res) => {
 
 
         // Creating assignment
-        await Assignment.create({creator, creator_image, creator_adm_no, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
+        const assignment = await Assignment.create({creator, creator_image, creator_adm_no, subject, class_name, title, assignment_date, last_date_of_submission, attachment, description, is_allow_student_for_multiple_submission, is_active});
 
 
         // Response
-        res.status(201).json('Created');
+        res.status(201).json(assignment);
 
     }catch(err){
         res.status(500).json(err);
