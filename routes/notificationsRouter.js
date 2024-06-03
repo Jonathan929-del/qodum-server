@@ -67,6 +67,8 @@ router.post('/send-notification', async (req, res) => {
             body:req.body.body || 'You have a new message.',
             viewed:false,
             type:req.body.type || 'added_assignment',
+            assignment_id:req.body.assignment_id || '',
+            answer_id:req.body.answer_id || '',
             created_at:new Date()
         });
 
@@ -75,7 +77,7 @@ router.post('/send-notification', async (req, res) => {
         res.status(200).send('Notification sent successfully');
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.message);
     }
 });
 
