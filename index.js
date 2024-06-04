@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+
 import schoolsRouter from './routes/schoolsRouter.js';
 import classesRouter from './routes/classesRouter.js';
 import studentsRouter from './routes/studentsRouter.js';

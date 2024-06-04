@@ -181,6 +181,139 @@ router.post('/view-notifications', async (req, res) => {
 
 
 
+// Sending class notice
+router.post('/send-class-notice', async (req, res) => {
+    try {
+
+        // Message
+        const message = {
+            notification: {
+                title:req.body.title || 'New Notification',
+                body:req.body.body || 'You have a new message.'
+            },
+            topic:req.body.topic
+        };
+
+    
+        // Sending
+        await getMessaging().send(message);
+
+    
+        // Saving the message to firestore
+        await db.collection('class_notices').add({
+            to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
+            title:req.body.title || 'New Notification',
+            body:req.body.body || 'You have a new message.',
+            viewed:false,
+            type:req.body.type || 'added_assignment',
+            created_at:new Date()
+        });
+
+
+        // Response
+        res.status(200).send('Class notice sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Get user's class notices
+router.post('/user-class-notices', async (req, res) => {
+    try {
+
+        // Request params
+        const {to} = req.body;
+
+
+        // Fetching
+        const snapshot = await db.collection('class_notices').where('to', 'in', to).get();
+        const notifications = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+
+        // Separate notifications into viewed and unviewed
+        const unviewed_notifications = notifications.filter(notification => !notification.viewed);
+        const viewed_notifications = notifications.filter(notification => notification.viewed);
+
+
+        // Response
+        res.status(200).json({
+            unviewed_notifications,
+            viewed_notifications
+        });
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
+// CLass notices count
+router.post('/class-notices-count', async (req, res) => {
+    try {
+
+        // Request params
+        const {to} = req.body;
+
+
+        // Fetching
+        const notificationsCount = (await db.collection('class_notices').where('to', 'in', to).where('viewed', '==', false).get()).size;
+
+
+        // Response
+        res.status(200).json(notificationsCount);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
+// View class notices
+router.post('/view-class-notices', async (req, res) => {
+    try {
+
+        // Request params
+        const {notifications_ids} = req.body;
+
+
+        // Updating notifications documents
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('class_notices');
+        notifications_ids.forEach(id => {
+            const notificationRef = notificationsCollection.doc(id);
+            batch.update(notificationRef, {viewed:true});
+        });
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Class notice marked as viewed successfully');
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
 
 
 // Export
