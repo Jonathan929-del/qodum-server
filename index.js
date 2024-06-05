@@ -11,6 +11,7 @@ import classesRouter from './routes/classesRouter.js';
 import studentsRouter from './routes/studentsRouter.js';
 import teachersRouter from './routes/teachersRouter.js';
 import subjectsRouter from './routes/subjectsRouter.js';
+import paymentsRouter from './routes/paymentsRouter.js';
 import assignemtsRouter from './routes/assignmentsRouter.js';
 import notificationsRouter from './routes/notificationsRouter.js';
 
@@ -39,6 +40,7 @@ app.use('/assignments', assignemtsRouter);
 app.use('/classes', classesRouter);
 app.use('/subjects', subjectsRouter);
 app.use('/notifications', notificationsRouter);
+app.use('/payments', paymentsRouter);
 
 
 

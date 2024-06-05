@@ -210,7 +210,7 @@ router.post('/student/register', async (req, res) => {
 
 
 
-// login student
+// Login student
 router.post('/student/login', async (req, res) => {
     try {
 
@@ -243,6 +243,56 @@ router.post('/student/login', async (req, res) => {
             token
         });
 
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Fetch student fee detalis
+router.post('/student/fee', async (req, res) => {
+    try {
+
+        // Validations
+        const {adm_no} = req.body;
+
+
+        // Student fee details
+        const student = await AdmittedStudent.findOne({'student.adm_no':adm_no});
+        const feeHeads = student.affiliated_heads.heads;
+
+
+        // Response
+        res.status(200).json(feeHeads);
+
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Modify student fee heads
+router.post('/student/fee/pay', async (req, res) => {
+    try {
+
+        // Validations
+        const {adm_no, newHeads} = req.body;
+
+
+        // Student fee details
+        await AdmittedStudent.findOneAndUpdate({'student.adm_no':adm_no}, {'affiliated_heads.heads':newHeads});
+
+
+        // Response
+        res.status(200).json('Payment done');
 
     } catch (err) {
         res.status(500).json(err);
