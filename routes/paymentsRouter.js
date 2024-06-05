@@ -17,48 +17,70 @@ const router = express.Router();
 router.post('/payment/create', async (req, res) => {
     try {
 
-        // Validations
+        // Request body
         const {
-            student,
-            receipt_no,
-            ref_no,
-            installments,
-            received_date,
-            remarks,
-            paymode,
-            paymode_details,
-            fee_type,
-            advance_dues_number,
-            class_name,
-            board,
-            adm_no,
-            father_name,
+
+            // School data
             school_name,
+            receipt_no,
             school_address,
             website,
             school_no,
             affiliation_no,
             logo,
-            wing_name,
-            entry_mode,
+
+            // Student data
+            student,
+            class_name,
+            adm_no,
+            father_name,
             is_new,
             is_active,
             student_status,
+
+            // Payment data
+            installments,
+            received_date,
+            fee_type,
             bank_name,
             fee_group,
-        
-    
-            // Amounts
             actual_amount,
-            concession_amount,
             paid_amount,
             paid_heads,
-            concession_reason
+    
         } = req.body;
 
 
         // Creating payment
-        await Payment.create({student, receipt_no});
+        await Payment.create({
+            // School data
+            school_name,
+            receipt_no,
+            school_address,
+            website,
+            school_no,
+            affiliation_no,
+            logo,
+
+            // Student data
+            student,
+            class_name,
+            adm_no,
+            father_name,
+            is_new,
+            is_active,
+            student_status,
+
+            // Payment data
+            installments,
+            received_date,
+            fee_type,
+            bank_name,
+            fee_group,
+            actual_amount,
+            paid_amount,
+            paid_heads,
+        });
 
 
         // Reponse
