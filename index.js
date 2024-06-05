@@ -15,6 +15,7 @@ import paymentsRouter from './routes/paymentsRouter.js';
 import assignemtsRouter from './routes/assignmentsRouter.js';
 import notificationsRouter from './routes/notificationsRouter.js';
 import feeTypesRouter from './routes/feeTypesRouter.js';
+import installmentsRouter from './routes/installmentsRouter.js';
 
 
 
@@ -43,6 +44,7 @@ app.use('/subjects', subjectsRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/payments', paymentsRouter);
 app.use('/fee-types', feeTypesRouter);
+app.use('/installments', installmentsRouter);
 
 
 
