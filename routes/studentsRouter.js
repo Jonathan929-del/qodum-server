@@ -174,7 +174,9 @@ router.post('/student/register', async (req, res) => {
                 address:student.student.h_no_and_streets,
                 contact_person_mobile:student.student.contact_person_mobile,
                 roll_no:student.student.roll_no,
-                aadhar_card_no:student.student.aadhar_card_no
+                aadhar_card_no:student.student.aadhar_card_no,
+                is_new:student.student.is_new,
+                is_active:student.student.is_active
             },
             
             parents:{

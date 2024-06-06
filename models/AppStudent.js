@@ -27,7 +27,9 @@ const AppStudentSchema = mongoose.Schema({
         address:{type:String},
         contact_person_mobile:{type:String},
         roll_no:{type:Number},
-        aadhar_card_no:{type:Number}
+        aadhar_card_no:{type:Number},
+        is_new:{type:Boolean},
+        is_active:{type:Boolean}
     },
     
     // Parents details

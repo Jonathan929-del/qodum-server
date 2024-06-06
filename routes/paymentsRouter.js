@@ -46,7 +46,7 @@ router.post('/payment/create', async (req, res) => {
             fee_group,
             actual_amount,
             paid_amount,
-            paid_heads,
+            paid_heads
     
         } = req.body;
 
