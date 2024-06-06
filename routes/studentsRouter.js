@@ -263,11 +263,11 @@ router.post('/student/fee', async (req, res) => {
 
         // Student fee details
         const student = await AdmittedStudent.findOne({'student.adm_no':adm_no});
-        const feeHeads = student.affiliated_heads.heads;
+        const feeDetails = student.affiliated_heads;
 
 
         // Response
-        res.status(200).json(feeHeads);
+        res.status(200).json(feeDetails);
 
 
     } catch (err) {
