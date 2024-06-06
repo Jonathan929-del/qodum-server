@@ -284,11 +284,11 @@ router.post('/student/fee/pay', async (req, res) => {
     try {
 
         // Validations
-        const {adm_no, newHeads} = req.body;
+        const {adm_no, new_heads} = req.body;
 
 
         // Student fee details
-        await AdmittedStudent.findOneAndUpdate({'student.adm_no':adm_no}, {'affiliated_heads.heads':newHeads});
+        await AdmittedStudent.findOneAndUpdate({'student.adm_no':adm_no}, {'affiliated_heads.heads':new_heads});
 
 
         // Response
