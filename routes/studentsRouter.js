@@ -305,5 +305,25 @@ router.post('/student/fee/pay', async (req, res) => {
 
 
 
+// Fetch students admission numbers
+router.get('/adm-nos', async (req, res) => {
+    try {
+
+        // Student admission numbers
+        const studnetsAdmNos = await AppStudent.find({}, {adm_no:1});
+
+
+        // Response
+        res.status(200).json(studnetsAdmNos);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
