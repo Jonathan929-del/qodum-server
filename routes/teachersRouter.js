@@ -253,5 +253,26 @@ router.post('/teacher/login', async (req, res) => {
 
 
 
+// Fetch teachers admission numbers
+router.get('/adm-nos', async (req, res) => {
+    try {
+
+        // Teachers admission numbers
+        const teachersAdmNos = await AppTeacher.find({}, {adm_no:1});
+
+
+        // Response
+        res.status(200).json(teachersAdmNos);
+
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
