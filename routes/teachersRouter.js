@@ -258,7 +258,7 @@ router.get('/adm-nos', async (req, res) => {
     try {
 
         // Teachers admission numbers
-        const teachersAdmNos = await AppTeacher.find({}, {adm_no:1});
+        const teachersAdmNos = await AppTeacher.find({}, {adm_no:1, name:1, image:1});
 
 
         // Response

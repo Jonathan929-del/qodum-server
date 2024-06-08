@@ -310,11 +310,21 @@ router.get('/adm-nos', async (req, res) => {
     try {
 
         // Student admission numbers
-        const studnetsAdmNos = await AppStudent.find({}, {adm_no:1});
+        const studnetsAdmNos = await AppStudent.find({}, {adm_no:1, 'student.name':1, 'student.image':1});
+
+        // Students array
+        const students = studnetsAdmNos.map(s => {
+            return {
+                _id:s._id,
+                adm_no:s.adm_no,
+                name:s.student.name,
+                image:s.student.image,
+            };
+        });
 
 
         // Response
-        res.status(200).json(studnetsAdmNos);
+        res.status(200).json(students);
 
     } catch (err) {
         res.status(500).json(err);
