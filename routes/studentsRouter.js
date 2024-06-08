@@ -319,6 +319,7 @@ router.get('/adm-nos', async (req, res) => {
                 adm_no:s.adm_no,
                 name:s.student.name,
                 image:s.student.image,
+                role:'Student'
             };
         });
 

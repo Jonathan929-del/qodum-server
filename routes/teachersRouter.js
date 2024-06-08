@@ -261,8 +261,20 @@ router.get('/adm-nos', async (req, res) => {
         const teachersAdmNos = await AppTeacher.find({}, {adm_no:1, name:1, image:1});
 
 
+        // Teachers
+        const teachers = teachersAdmNos.map(t => {
+            return{
+                _id:t._id,
+                adm_no:t.adm_no,
+                name:t.name,
+                image:t.image,
+                role:'Teacher'
+            };
+        })
+
+
         // Response
-        res.status(200).json(teachersAdmNos);
+        res.status(200).json(teachers);
 
 
     } catch (err) {
