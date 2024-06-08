@@ -335,15 +335,13 @@ router.post('/send-notice', async (req, res) => {
 
     
         // Saving the message to firestore
-        req.body.to.map(async t => {
-            await db.collection('notices').add({
-                to:t,
-                title:req.body.title || 'New Notification',
-                body:req.body.body || 'You have a new message.',
-                viewed:false,
-                type:req.body.type || 'added_assignment',
-                created_at:new Date()
-            });
+        await db.collection('notices').add({
+            to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
+            title:req.body.title || 'New Notification',
+            body:req.body.body || 'You have a new message.',
+            viewed:false,
+            type:req.body.type || 'added_assignment',
+            created_at:new Date()
         });
 
 
