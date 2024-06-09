@@ -197,11 +197,11 @@ router.post('/payment/last-payment', async (req, res) => {
 
 
         // Payment
-        const lastPayment = await Payment.findOne({adm_no}).sort({ received_date: -1 });
+        const lastPayment = await Payment.findOne({adm_no}).sort({received_date:-1});
 
 
         // Reponse
-        res.status(200).send(lastPayment.received_date);
+        res.status(200).send(lastPayment ? lastPayment.received_date : 'No payments');
 
     } catch (err) {
         res.status(500).json(err);
