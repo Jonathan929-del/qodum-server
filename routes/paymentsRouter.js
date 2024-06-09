@@ -188,5 +188,29 @@ router.post('/payment/create', async (req, res) => {
 
 
 
+// Create payment
+router.post('/payment/last-payment', async (req, res) => {
+    try {
+
+        // Request body
+        const {adm_no} = req.body;
+
+
+        // Payment
+        const lastPayment = await Payment.findOne({adm_no}).sort({ received_date: -1 });
+
+
+        // Reponse
+        res.status(200).send(lastPayment.received_date);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
