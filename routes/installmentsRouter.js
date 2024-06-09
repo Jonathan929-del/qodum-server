@@ -18,7 +18,7 @@ router.get('/names', async (req, res) => {
     try {
 
         // Installments
-        const installments = await Installment.find({}, {name:1});
+        const installments = await Installment.find({}, {name:1, due_on_date});
 
 
         // Response
