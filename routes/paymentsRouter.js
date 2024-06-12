@@ -15,13 +15,6 @@ const router = express.Router();
 
 
 
-
-
-
-
-
-
-
 // Send payment
 router.post('/payment/easy-collect', async (req, res) => {
     try {
