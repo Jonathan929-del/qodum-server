@@ -181,6 +181,38 @@ router.post('/view-notifications', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Sending class notice
 router.post('/send-class-notice', async (req, res) => {
     try {
@@ -212,6 +244,62 @@ router.post('/send-class-notice', async (req, res) => {
 
         // Response
         res.status(200).send('Class notice sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Edit class notice
+router.post('/edit-class-notice', async (req, res) => {
+    try {
+
+        // Request params
+        const {id, body} = req.body;
+
+
+        // Updating class notice
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('class_notices');
+        const notificationRef = notificationsCollection.doc(id);
+        batch.update(notificationRef, {body});
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Class notice edited');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Delete class notice
+router.post('/delete-class-notice', async (req, res) => {
+    try {
+
+        // Request params
+        const {id} = req.body;
+
+
+        // Updating class notice
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('class_notices');
+        const notificationRef = notificationsCollection.doc(id);
+        batch.delete(notificationRef);
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Class notice deleted');
 
     } catch (err) {
         res.status(500).json(err.message);
@@ -316,6 +404,51 @@ router.post('/view-class-notices', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Sending notice
 router.post('/send-notice', async (req, res) => {
     try {
@@ -350,6 +483,62 @@ router.post('/send-notice', async (req, res) => {
 
     } catch (err) {
         res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Edit notice
+router.post('/edit-notice', async (req, res) => {
+    try {
+
+        // Request params
+        const {id, body} = req.body;
+
+
+        // Updating notifications documents
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('notices');
+        const notificationRef = notificationsCollection.doc(id);
+        batch.update(notificationRef, {body});
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Notice edited');
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Delete notice
+router.post('/delete-notice', async (req, res) => {
+    try {
+
+        // Request params
+        const {id} = req.body;
+
+
+        // Updating notifications documents
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('notices');
+        const notificationRef = notificationsCollection.doc(id);
+        batch.delete(notificationRef);
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('Notice deleted');
+
+    } catch (err) {
+        res.status(500).json(err);
     }
 });
 
