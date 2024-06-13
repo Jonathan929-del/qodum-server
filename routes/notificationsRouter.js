@@ -85,8 +85,6 @@ router.post('/send-notification', async (req, res) => {
 
 
 
-
-
 // Get user's notifications
 router.post('/user-notifications', async (req, res) => {
     try {
@@ -123,8 +121,6 @@ router.post('/user-notifications', async (req, res) => {
 
 
 
-
-
 // Notifications count
 router.post('/notifications-count', async (req, res) => {
     try {
@@ -144,8 +140,6 @@ router.post('/notifications-count', async (req, res) => {
         res.status(500).json(err);
     }
 });
-
-
 
 
 
@@ -238,7 +232,8 @@ router.post('/send-class-notice', async (req, res) => {
             body:req.body.body || 'You have a new message.',
             viewed:false,
             type:req.body.type || 'added_assignment',
-            created_at:new Date()
+            created_at:new Date(),
+            created_by:req.body.created_by
         });
 
 
@@ -474,7 +469,8 @@ router.post('/send-notice', async (req, res) => {
             body:req.body.body || 'You have a new message.',
             viewed:false,
             type:req.body.type || 'added_assignment',
-            created_at:new Date()
+            created_at:new Date(),
+            created_by:req.body.created_by
         });
 
 
