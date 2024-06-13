@@ -9,6 +9,7 @@ import Payment from '../models/Payment.js';
 
 
 // Defining router
+let paymentStatuses = {};
 const router = express.Router();
 
 
@@ -20,7 +21,7 @@ router.post('/payment/easy-collect', async (req, res) => {
     try {
 
         // Request body
-        const {name, email, phone, amount, message} = req.body;
+        const {merchant_txn, name, email, phone, amount, message} = req.body;
 
 
         // Generate hash
@@ -30,14 +31,10 @@ router.post('/payment/easy-collect', async (req, res) => {
         };
 
 
-        // Random 12 digits string
-        const generateRandom12DigitNumber = () => String(Math.floor(Math.random() * 1e12)).padStart(12, '0');
-
-
         // Hash data
         const hashData = {
             key:process.env.EASEBUZZ_KEY,
-            merchant_txn:generateRandom12DigitNumber(),
+            merchant_txn,
             name,
             email,
             phone,
@@ -57,10 +54,36 @@ router.post('/payment/easy-collect', async (req, res) => {
 
 
         // Response
-        res.status(200).send(easebuzzRes.data);
+        res.status(200).send(easebuzzRes.data.data.payment_url);
 
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err);
+    }
+});
+
+
+
+
+
+// Handle Easebuzz callback
+app.post('/payment/callback', (req, res) => {
+    const { txStatus, merchant_txn } = req.body;
+
+    // Update the mock database with the payment status
+    paymentStatuses[merchant_txn] = txStatus;
+
+    res.status(200).end();
+});
+
+// Fetch payment status
+app.get('/payment/status', (req, res) => {
+    const { txn_id } = req.query;
+    const status = paymentStatuses[txn_id];
+
+    if (status) {
+        res.status(200).json({ status });
+    } else {
+        res.status(404).json({ error: 'Transaction not found' });
     }
 });
 
