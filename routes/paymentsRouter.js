@@ -66,7 +66,7 @@ router.post('/payment/easy-collect', async (req, res) => {
 
 
 // Handle Easebuzz callback
-app.post('/payment/callback', (req, res) => {
+router.post('/payment/callback', (req, res) => {
     const { txStatus, merchant_txn } = req.body;
 
     // Update the mock database with the payment status
@@ -76,7 +76,7 @@ app.post('/payment/callback', (req, res) => {
 });
 
 // Fetch payment status
-app.get('/payment/status', (req, res) => {
+router.get('/payment/status', (req, res) => {
     const { txn_id } = req.query;
     const status = paymentStatuses[txn_id];
 
