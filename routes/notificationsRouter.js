@@ -672,5 +672,175 @@ router.post('/view-notices', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Sending e-diary
+router.post('/send-ediary', async (req, res) => {
+    try {
+
+        // Request body
+        const {title, body, topic, type, created_by} = req.body;
+
+        // Message
+        const message = {
+            notification: {
+                title:title || 'New Notification',
+                body:body || 'You have a new message.'
+            },
+            topic:topic
+        };
+
+    
+        // Sending
+        await getMessaging().send(message);
+
+    
+        // Saving the message to firestore
+        await db.collection('ediaries').add({
+            topic,
+            title:title || 'New Notification',
+            body:body || 'You have a new message.',
+            viewed:false,
+            type:type || 'added_assignment',
+            created_at:new Date(),
+            created_by
+        });
+
+
+        // Response
+        res.status(200).send('E-diary sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Get user's e-diaries
+router.post('/user-ediaries', async (req, res) => {
+    try {
+
+        // Request params
+        const {topic} = req.body;
+
+
+        // Fetching
+        const snapshot = await db.collection('ediaries').where('topic', 'in', topic).get();
+        const notifications = snapshot.docs.map(doc => ({
+            id:doc.id,
+            ...doc.data()
+        }));
+
+
+        // Separate notifications into viewed and unviewed
+        const unviewed_notifications = notifications.filter(notification => !notification.viewed);
+        const viewed_notifications = notifications.filter(notification => notification.viewed);
+
+
+        // Response
+        res.status(200).json({
+            unviewed_notifications,
+            viewed_notifications
+        });
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// E-diaries count
+router.post('/ediaries-count', async (req, res) => {
+    try {
+
+        // Request params
+        const {topic} = req.body;
+
+
+        // Fetching
+        const notificationsCount = (await db.collection('ediaries').where('topic', 'in', topic).where('viewed', '==', false).get()).size;
+
+
+        // Response
+        res.status(200).json(notificationsCount);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// View ediaries
+router.post('/view-ediaries', async (req, res) => {
+    try {
+
+        // Request params
+        const {ediaries_ids} = req.body;
+
+
+        // Updating notifications documents
+        const batch = getFirestore().batch();
+        const notificationsCollection = getFirestore().collection('ediaries');
+        ediaries_ids.forEach(id => {
+            const notificationRef = notificationsCollection.doc(id);
+            batch.update(notificationRef, {viewed:true});
+        });
+        await batch.commit();
+
+
+        // Response
+        res.status(200).json('E-diary marked as viewed successfully');
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
