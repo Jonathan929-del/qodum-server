@@ -1,6 +1,7 @@
 // Imports
 import express from 'express';
 import Installment from '../models/Installment.js';
+import AdmittedStudent from '../models/AdmittedStudent.js';
 
 
 
@@ -34,13 +35,28 @@ router.get('/names', async (req, res) => {
 
 
 // Fetching late installments names
-router.get('/overdues', async (req, res) => {
+router.post('/overdues', async (req, res) => {
     try {
+
+        // Request body
+        const {adm_no} = req.body;
+
+
+        // Student fee data
+        const student = await AdmittedStudent.findOne({'student.adm_no':adm_no});
+        const studentFeeHeads = student.affiliated_heads.heads;
+
+
+        // Total number generator
+        const totalNumberGenerator = numbers => {
+            return numbers.reduce((acc, curr) => acc + curr, 0);
+        };
+
 
         // All installments
         const installments = await Installment.find({}, {name:1, due_on_date:1});
         
-        
+
         // Today's date
         const today = new Date();
     
@@ -52,14 +68,30 @@ router.get('/overdues', async (req, res) => {
         
         // Filter installments where due_on_date is past today's date
         const overdueInstallments = installments.filter(installment => {
-            const { day, month, year } = installment.due_on_date;
+            const {day, month, year} = installment.due_on_date;
             const dueDate = new Date(`${year}-${new Date(Date.parse(month +" 1, 2012")).getMonth() + 1}-${day}`);
             return dueDate < currentDate;
         });
 
 
+        // Installment due amounts
+        const installmentDueAmounts = i => {
+            const installmentHeads = studentFeeHeads.filter(h => h.installment === i.name || h.installment === 'All installments');
+            const installmentHeadsFilteredAmounts = installmentHeads.map(h => h.amounts.filter(a => a.name === i.name)).flat();
+            const amountsSum = totalNumberGenerator(installmentHeadsFilteredAmounts.map(a => Number(a.payable_amount === undefined ? a.value : a.last_rec_amount === 0 ? a.value : a.payable_amount)));
+            return(amountsSum);
+        };
+
+
+        // Unpaid installments
+        const unPaidInstallments = overdueInstallments.filter(i => {
+            const installmentAmounts = installmentDueAmounts(i);
+            return installmentAmounts > 0;
+        });
+
+
         // Response
-        res.status(200).json(overdueInstallments);
+        res.status(200).json(unPaidInstallments);
 
     } catch (err) {
         res.status(500).json(err);
