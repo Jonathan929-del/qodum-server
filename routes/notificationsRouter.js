@@ -214,13 +214,16 @@ router.post('/view-notifications', async (req, res) => {
 router.post('/send-class-notice', async (req, res) => {
     try {
 
+        // Request body
+        const {title, body, topic, type, created_by} = req.body;
+
         // Message
         const message = {
             notification: {
-                title:req.body.title || 'New Notification',
-                body:req.body.body || 'You have a new message.'
+                title:title || 'New Notification',
+                body:body || 'You have a new message.'
             },
-            topic:req.body.topic
+            topic:topic
         };
 
     
@@ -230,13 +233,13 @@ router.post('/send-class-notice', async (req, res) => {
     
         // Saving the message to firestore
         await db.collection('class_notices').add({
-            to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
-            title:req.body.title || 'New Notification',
-            body:req.body.body || 'You have a new message.',
+            topic,
+            title:title || 'New Notification',
+            body:body || 'You have a new message.',
             viewed:false,
-            type:req.body.type || 'added_assignment',
+            type:type || 'added_assignment',
             created_at:new Date(),
-            created_by:req.body.created_by
+            created_by
         });
 
 
@@ -257,14 +260,14 @@ router.post('/edit-class-notice', async (req, res) => {
     try {
 
         // Request params
-        const {id, body} = req.body;
+        const {id, title, body} = req.body;
 
 
         // Updating class notice
         const batch = getFirestore().batch();
         const notificationsCollection = getFirestore().collection('class_notices');
         const notificationRef = notificationsCollection.doc(id);
-        batch.update(notificationRef, {body});
+        batch.update(notificationRef, {title, body});
         await batch.commit();
 
 
@@ -313,11 +316,11 @@ router.post('/user-class-notices', async (req, res) => {
     try {
 
         // Request params
-        const {to} = req.body;
+        const {topic} = req.body;
 
 
         // Fetching
-        const snapshot = await db.collection('class_notices').where('to', 'in', to).get();
+        const snapshot = await db.collection('class_notices').where('topic', 'in', topic).get();
         const notifications = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -344,18 +347,16 @@ router.post('/user-class-notices', async (req, res) => {
 
 
 
-
-
-// CLass notices count
+// Class notices count
 router.post('/class-notices-count', async (req, res) => {
     try {
 
         // Request params
-        const {to} = req.body;
+        const {topic} = req.body;
 
 
         // Fetching
-        const notificationsCount = (await db.collection('class_notices').where('to', 'in', to).where('viewed', '==', false).get()).size;
+        const notificationsCount = (await db.collection('class_notices').where('topic', 'in', topic).where('viewed', '==', false).get()).size;
 
 
         // Response
@@ -365,8 +366,6 @@ router.post('/class-notices-count', async (req, res) => {
         res.status(500).json(err);
     }
 });
-
-
 
 
 
@@ -451,13 +450,16 @@ router.post('/view-class-notices', async (req, res) => {
 router.post('/send-notice', async (req, res) => {
     try {
 
+        // Request body
+        const {title, body, topic, type, created_by, notice_id} = req.body;
+
         // Message
         const message = {
             notification: {
-                title:req.body.title || 'New Notification',
-                body:req.body.body || 'You have a new message.'
+                title:title || 'New Notification',
+                body:body || 'You have a new message.'
             },
-            topic:req.body.topic
+            topic:topic
         };
 
     
@@ -467,14 +469,14 @@ router.post('/send-notice', async (req, res) => {
     
         // Saving the message to firestore
         await db.collection('notices').add({
-            to:req.body.topic.split('.')[req.body.topic.split('.').length - 1].replace(/_/g, '/'),
-            title:req.body.title || 'New Notification',
-            body:req.body.body || 'You have a new message.',
+            topic,
+            title:title || 'New Notification',
+            body:body || 'You have a new message.',
             viewed:false,
-            type:req.body.type || 'added_assignment',
+            type:type || 'added_assignment',
             created_at:new Date(),
-            created_by:req.body.created_by,
-            notice_id:req.body.notice_id
+            created_by,
+            notice_id
         });
 
 
@@ -498,16 +500,33 @@ router.post('/edit-notice', async (req, res) => {
         const {notice_id, title, body} = req.body;
 
 
-        // Updating notifications documents
-        const batch = getFirestore().batch();
-        const notificationsCollection = getFirestore().collection('notices');
-        const notificationRef = notificationsCollection.doc({notice_id});
-        batch.update(notificationRef, {title, body});
+        // Get Firestore instance
+        const db = getFirestore();
+
+
+        // Fetching documents with notice_id
+        const notificationsCollection = db.collection('notices');
+        const querySnapshot = await notificationsCollection.where('notice_id', '==', notice_id).get();
+
+
+        // Empty validations
+        if(querySnapshot.empty){
+            res.send('No notices found with the given notice_id');
+            return;
+        };
+
+
+        // Updating
+        const batch = db.batch();
+        querySnapshot.forEach(doc => {
+            const notificationRef = notificationsCollection.doc(doc.id);
+            batch.update(notificationRef, { title, body });
+        });
         await batch.commit();
 
-
+    
         // Response
-        res.status(200).json('Notice edited');
+        res.status(200).json('Notices edited');
 
     } catch (err) {
         res.status(500).json(err);
@@ -522,20 +541,37 @@ router.post('/edit-notice', async (req, res) => {
 router.post('/delete-notice', async (req, res) => {
     try {
 
-        // Request params
-        const {id} = req.body;
+    // Request body
+    const {notice_id} = req.body;
 
 
-        // Updating notifications documents
-        const batch = getFirestore().batch();
-        const notificationsCollection = getFirestore().collection('notices');
-        const notificationRef = notificationsCollection.doc(id);
+    // Get Firestore instance
+    const db = getFirestore();
+
+
+    // Query to find all documents with the specified notice_id
+    const notificationsCollection = db.collection('notices');
+    const querySnapshot = await notificationsCollection.where('notice_id', '==', notice_id).get();
+
+
+    // Empty validation
+    if(querySnapshot.empty){
+        res.send('No notices found with the given notice_id');
+        return;
+    };
+
+
+    // Deleting
+    const batch = db.batch();
+    querySnapshot.forEach((doc) => {
+        const notificationRef = notificationsCollection.doc(doc.id);
         batch.delete(notificationRef);
-        await batch.commit();
+    });
+    await batch.commit();
 
 
-        // Response
-        res.status(200).json('Notice deleted');
+    // Response
+    res.status(200).json('Notices deleted');
 
     } catch (err) {
         res.status(500).json(err);
@@ -551,13 +587,13 @@ router.post('/user-notices', async (req, res) => {
     try {
 
         // Request params
-        const {to} = req.body;
+        const {topic} = req.body;
 
 
         // Fetching
-        const snapshot = await db.collection('notices').where('to', 'in', to).get();
+        const snapshot = await db.collection('notices').where('topic', 'in', topic).get();
         const notifications = snapshot.docs.map(doc => ({
-            id: doc.id,
+            id:doc.id,
             ...doc.data()
         }));
 
@@ -587,11 +623,11 @@ router.post('/notices-count', async (req, res) => {
     try {
 
         // Request params
-        const {to} = req.body;
+        const {topic} = req.body;
 
 
         // Fetching
-        const notificationsCount = (await db.collection('notices').where('to', 'in', to).where('viewed', '==', false).get()).size;
+        const notificationsCount = (await db.collection('notices').where('topic', 'in', topic).where('viewed', '==', false).get()).size;
 
 
         // Response
@@ -601,8 +637,6 @@ router.post('/notices-count', async (req, res) => {
         res.status(500).json(err);
     }
 });
-
-
 
 
 
