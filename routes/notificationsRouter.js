@@ -260,14 +260,14 @@ router.post('/edit-class-notice', async (req, res) => {
     try {
 
         // Request params
-        const {id, title, body} = req.body;
+        const {id, body} = req.body;
 
 
         // Updating class notice
         const batch = getFirestore().batch();
         const notificationsCollection = getFirestore().collection('class_notices');
         const notificationRef = notificationsCollection.doc(id);
-        batch.update(notificationRef, {title, body});
+        batch.update(notificationRef, {body});
         await batch.commit();
 
 
@@ -497,7 +497,7 @@ router.post('/edit-notice', async (req, res) => {
     try {
 
         // Request params
-        const {notice_id, body} = req.body;
+        const {notice_id, title, body} = req.body;
 
 
         // Get Firestore instance
@@ -520,7 +520,7 @@ router.post('/edit-notice', async (req, res) => {
         const batch = db.batch();
         querySnapshot.forEach(doc => {
             const notificationRef = notificationsCollection.doc(doc.id);
-            batch.update(notificationRef, { body });
+            batch.update(notificationRef, { title, body });
         });
         await batch.commit();
 
