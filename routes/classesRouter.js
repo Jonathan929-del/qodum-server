@@ -64,6 +64,7 @@ router.post('/class/students', async (req, res) => {
         // Reques body
         const {class_name} = req.body;
 
+
         // Student count
         const students = await AppStudent.find({'student.class_name':class_name}, {'adm_no':1, 'student.name':1, 'student.roll_no':1});
 

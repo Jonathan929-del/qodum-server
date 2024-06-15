@@ -310,7 +310,7 @@ router.get('/adm-nos', async (req, res) => {
     try {
 
         // Student admission numbers
-        const studnetsAdmNos = await AppStudent.find({}, {adm_no:1, 'student.name':1, 'student.image':1});
+        const studnetsAdmNos = await AppStudent.find({}, {adm_no:1, 'student.name':1, 'student.image':1, 'student.class_name':1});
 
         // Students array
         const students = studnetsAdmNos.map(s => {
@@ -319,6 +319,7 @@ router.get('/adm-nos', async (req, res) => {
                 adm_no:s.adm_no,
                 name:s.student.name,
                 image:s.student.image,
+                class_name:s.student.class_name,
                 role:'Student'
             };
         });
