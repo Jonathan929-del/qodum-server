@@ -215,7 +215,7 @@ router.post('/send-class-notice', async (req, res) => {
     try {
 
         // Request body
-        const {title, body, topic, type, created_by} = req.body;
+        const {title, body, topic, type, created_by, class_notice_id} = req.body;
 
         // Message
         const message = {
@@ -239,6 +239,7 @@ router.post('/send-class-notice', async (req, res) => {
             viewed:false,
             type:type || 'added_assignment',
             created_at:new Date(),
+            class_notice_id,
             created_by
         });
 
