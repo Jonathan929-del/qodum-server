@@ -261,19 +261,36 @@ router.post('/edit-class-notice', async (req, res) => {
     try {
 
         // Request params
-        const {id, body} = req.body;
+        const {class_notice_id, title, body} = req.body;
 
 
-        // Updating class notice
-        const batch = getFirestore().batch();
-        const notificationsCollection = getFirestore().collection('class_notices');
-        const notificationRef = notificationsCollection.doc(id);
-        batch.update(notificationRef, {body});
+        // Get Firestore instance
+        const db = getFirestore();
+
+
+        // Fetching documents with class_notice_id
+        const notificationsCollection = db.collection('class_notices');
+        const querySnapshot = await notificationsCollection.where('class_notice_id', '==', class_notice_id).get();
+
+
+        // Empty validations
+        if(querySnapshot.empty){
+            res.send('No notices found with the given class_notice_id');
+            return;
+        };
+
+
+        // Updating
+        const batch = db.batch();
+        querySnapshot.forEach(doc => {
+            const notificationRef = notificationsCollection.doc(doc.id);
+            batch.update(notificationRef, {title, body});
+        });
         await batch.commit();
 
-
+    
         // Response
-        res.status(200).json('Class notice edited');
+        res.status(200).json('Notices edited');
 
     } catch (err) {
         res.status(500).json(err.message);
@@ -288,20 +305,37 @@ router.post('/edit-class-notice', async (req, res) => {
 router.post('/delete-class-notice', async (req, res) => {
     try {
 
-        // Request params
-        const {id} = req.body;
+    // Request body
+    const {class_notice_id} = req.body;
 
 
-        // Updating class notice
-        const batch = getFirestore().batch();
-        const notificationsCollection = getFirestore().collection('class_notices');
-        const notificationRef = notificationsCollection.doc(id);
+    // Get Firestore instance
+    const db = getFirestore();
+
+
+    // Query to find all documents with the specified class_notice_id
+    const notificationsCollection = db.collection('class_notices');
+    const querySnapshot = await notificationsCollection.where('class_notice_id', '==', class_notice_id).get();
+
+
+    // Empty validation
+    if(querySnapshot.empty){
+        res.send('No class notices found with the given class_notice_id');
+        return;
+    };
+
+
+    // Deleting
+    const batch = db.batch();
+    querySnapshot.forEach((doc) => {
+        const notificationRef = notificationsCollection.doc(doc.id);
         batch.delete(notificationRef);
-        await batch.commit();
+    });
+    await batch.commit();
 
 
-        // Response
-        res.status(200).json('Class notice deleted');
+    // Response
+    res.status(200).json('Class notices deleted');
 
     } catch (err) {
         res.status(500).json(err.message);
