@@ -748,7 +748,7 @@ router.post('/send-ediary', async (req, res) => {
     try {
 
         // Request body
-        const {title, body, topic, type, created_by} = req.body;
+        const {title, body, topic, type, created_by, notice_id} = req.body;
 
         // Message
         const message = {
@@ -772,7 +772,8 @@ router.post('/send-ediary', async (req, res) => {
             viewed:false,
             type:type || 'added_assignment',
             created_at:new Date(),
-            created_by
+            created_by,
+            notice_id
         });
 
 
@@ -781,6 +782,96 @@ router.post('/send-ediary', async (req, res) => {
 
     } catch (err) {
         res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Edit e-diary
+router.post('/edit-ediary', async (req, res) => {
+    try {
+
+        // Request params
+        const {notice_id, title, body} = req.body;
+
+
+        // Get Firestore instance
+        const db = getFirestore();
+
+
+        // Fetching documents with notice_id
+        const notificationsCollection = db.collection('ediaries');
+        const querySnapshot = await notificationsCollection.where('notice_id', '==', notice_id).get();
+
+
+        // Empty validations
+        if(querySnapshot.empty){
+            res.send('No e-diaries found with the given notice_id');
+            return;
+        };
+
+
+        // Updating
+        const batch = db.batch();
+        querySnapshot.forEach(doc => {
+            const notificationRef = notificationsCollection.doc(doc.id);
+            batch.update(notificationRef, {title, body});
+        });
+        await batch.commit();
+
+    
+        // Response
+        res.status(200).json('E-diaries edited');
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Delete e-diary
+router.post('/delete-ediary', async (req, res) => {
+    try {
+
+    // Request body
+    const {notice_id} = req.body;
+
+
+    // Get Firestore instance
+    const db = getFirestore();
+
+
+    // Query to find all documents with the specified notice_id
+    const notificationsCollection = db.collection('ediaries');
+    const querySnapshot = await notificationsCollection.where('notice_id', '==', notice_id).get();
+
+
+    // Empty validation
+    if(querySnapshot.empty){
+        res.send('No e-diaries found with the given notice_id');
+        return;
+    };
+
+
+    // Deleting
+    const batch = db.batch();
+    querySnapshot.forEach((doc) => {
+        const notificationRef = notificationsCollection.doc(doc.id);
+        batch.delete(notificationRef);
+    });
+    await batch.commit();
+
+
+    // Response
+    res.status(200).json('E-diaries deleted');
+
+    } catch (err) {
+        res.status(500).json(err);
     }
 });
 
