@@ -1,5 +1,6 @@
 // Imports
 import dotenv from 'dotenv';
+import cron from 'node-cron';
 import express from 'express';
 import {getFirestore} from 'firebase-admin/firestore';
 import {getMessaging} from 'firebase-admin/messaging';
@@ -97,7 +98,7 @@ router.post('/user-notifications', async (req, res) => {
 
 
         // Fetching
-        const snapshot = await db.collection('notifications').where('to', 'in', topic).get();
+        const snapshot = await db.collection('notifications').where('to', 'in', topic).orderBy('created_at', 'desc').get();
         const notifications = snapshot.docs.map(doc => ({
             id:doc.id,
             ...doc.data()
@@ -355,7 +356,7 @@ router.post('/user-class-notices', async (req, res) => {
 
 
         // Fetching
-        const snapshot = await db.collection('class_notices').where('topic', 'in', topic).get();
+        const snapshot = await db.collection('class_notices').where('topic', 'in', topic).orderBy('created_at', 'desc').get();
         const notifications = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -626,7 +627,7 @@ router.post('/user-notices', async (req, res) => {
 
 
         // Fetching
-        const snapshot = await db.collection('notices').where('topic', 'in', topic).get();
+        const snapshot = await db.collection('notices').where('topic', 'in', topic).orderBy('created_at', 'desc').get();
         const notifications = snapshot.docs.map(doc => ({
             id:doc.id,
             ...doc.data()
@@ -796,7 +797,7 @@ router.post('/user-ediaries', async (req, res) => {
 
 
         // Fetching
-        const snapshot = await db.collection('ediaries').where('topic', 'in', topic).get();
+        const snapshot = await db.collection('ediaries').where('topic', 'in', topic).orderBy('created_at', 'desc').get();
         const notifications = snapshot.docs.map(doc => ({
             id:doc.id,
             ...doc.data()
@@ -870,6 +871,104 @@ router.post('/view-ediaries', async (req, res) => {
 
     } catch (err) {
         res.status(500).json(err);
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Creating flash message
+router.post('/create-flash-message', async (req, res) => {
+    try {
+
+        // Request body
+        const {message, expires_on} = req.body;
+
+    
+        // Saving the message to firestore
+        await db.collection('flash_messages').add({
+            message,
+            expires_on,
+            created_at:new Date()
+        });
+
+
+        // Response
+        res.status(200).send('Flash message sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Fetch flash message
+router.get('/fetch-flash-messages', async (req, res) => {
+    try {
+
+
+        // Fetching
+        const snapshot = await db.collection('flash_messages').orderBy('created_at', 'desc').get();
+        const flashMessages = snapshot.docs.map(doc => ({
+            id:doc.id,
+            ...doc.data()
+        }));
+
+
+        // Response
+        res.status(200).json(flashMessages);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Setting is active to be false if past last date of submission
+cron.schedule('0 * * * *', async () => {
+    try{
+
+        const currentDate = new Date();
+        const snapshot = await db.collection('flash_messages').where('expires_on', '<=', currentDate).get();
+    
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+    
+        await batch.commit();
+        console.log('Expired flash messages deleted successfully.');
+
+    } catch (error) {
+        console.error('Error updating assignments:', error);
     }
 });
 
