@@ -304,15 +304,16 @@ router.put('/assignment/feedback', async (req, res) => {
 
 
 // Setting is active to be false if past last date of submission
-cron.schedule('0 0 * * *', async () => {
-    const currentDate = new Date();
-
+cron.schedule('* * * * *', async () => {
     try{
+
+        const currentDate = new Date();
         const result = await Assignment.updateMany(
             {last_date_of_submission:{$lt:currentDate}, is_active:true},
             {$set:{is_active:false}}
         );
-        console.log(`${result.nModified} assignments updated successfully`);
+        console.log(`${result.modifiedCount} assignments updated successfully`);
+
     } catch (error) {
         console.error('Error updating assignments:', error);
     }
