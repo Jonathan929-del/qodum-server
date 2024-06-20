@@ -9,7 +9,6 @@ import Payment from '../models/Payment.js';
 
 
 // Defining router
-let paymentStatuses = {};
 const router = express.Router();
 
 
@@ -58,32 +57,6 @@ router.post('/payment/easy-collect', async (req, res) => {
 
     } catch (err) {
         res.status(500).send(err);
-    }
-});
-
-
-
-
-
-// Handle Easebuzz callback
-router.post('/payment/callback', (req, res) => {
-    const { txStatus, merchant_txn } = req.body;
-
-    // Update the mock database with the payment status
-    paymentStatuses[merchant_txn] = txStatus;
-
-    res.status(200).end();
-});
-
-// Fetch payment status
-router.get('/payment/status', (req, res) => {
-    const { txn_id } = req.query;
-    const status = paymentStatuses[txn_id];
-
-    if (status) {
-        res.status(200).json({ status });
-    } else {
-        res.status(404).json({ error: 'Transaction not found' });
     }
 });
 
@@ -173,7 +146,7 @@ router.post('/payment/create', async (req, res) => {
 
 
 
-// Create payment
+// Last payment
 router.post('/payment/last-payment', async (req, res) => {
     try {
 
