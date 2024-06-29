@@ -16,16 +16,16 @@ const router = express.Router();
 
 
 // Send payment
-router.post('/payment/easy-collect', async (req, res) => {
+router.post('/payment/initiate-payment', async (req, res) => {
     try {
 
         // Request body
-        const {merchant_txn, name, email, phone, amount, message} = req.body;
+        const {txnid, amount, productinfo, firstname, phone, email} = req.body;
 
 
         // Generate hash
         const generateHash = data => {
-            const hashString = `${data.key}|${data.merchant_txn}|${data.name}|${data.email}|${data.phone}|${data.amount}|${data.udf1}|${data.udf2}|${data.udf3}|${data.udf4}|${data.udf5}|${data.message}|${process.env.EASEBUZZ_SALT}`;
+            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
@@ -33,30 +33,36 @@ router.post('/payment/easy-collect', async (req, res) => {
         // Hash data
         const hashData = {
             key:process.env.EASEBUZZ_KEY,
-            merchant_txn,
-            name,
-            email,
-            phone,
+            txnid,
             amount,
-            udf1:'test',
-            udf2:'udf2',
-            udf3:'udf3',
-            udf4:'udf4',
-            udf5:'1',
-            message
+            productinfo,
+            firstname,
+            phone,
+            email,
+            surl:'http://localhost:5000/payments/payment/success',
+            furl:'http://localhost:5000/payments/payment/failure',
         };
         hashData.hash = generateHash(hashData);
 
 
+
+        // Convert JSON object to url encoded form
+        const jsonToUrlEncoded = json => {
+            return Object.keys(json)
+              .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
+              .join('&');
+        };
+
+
         // API call
-        const easebuzzRes = await axios.post('https://testdashboard.easebuzz.in/easycollect/v1/create', hashData);
+        const easebuzzRes = await axios.post('https://testpay.easebuzz.in/payment/initiateLink', jsonToUrlEncoded(hashData));
 
 
         // Response
-        res.status(200).send(easebuzzRes.data.data.payment_url);
+        res.status(200).send(easebuzzRes.data);
 
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
