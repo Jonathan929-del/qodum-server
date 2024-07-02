@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import cron from 'node-cron';
 import express from 'express';
-import {getFirestore} from 'firebase-admin/firestore';
+import {getFirestore, Timestamp} from 'firebase-admin/firestore';
 import {getMessaging} from 'firebase-admin/messaging';
 import {initializeApp, cert} from 'firebase-admin/app';
 
@@ -1001,7 +1001,7 @@ router.post('/create-flash-message', async (req, res) => {
         // Saving the message to firestore
         await db.collection('flash_messages').add({
             message,
-            expires_on,
+            expires_on:new Date(expires_on),
             created_at:new Date()
         });
 
@@ -1044,7 +1044,7 @@ router.get('/fetch-flash-messages', async (req, res) => {
 
 
 // Setting is active to be false if past last date of submission
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
     try{
 
         const currentDate = new Date();

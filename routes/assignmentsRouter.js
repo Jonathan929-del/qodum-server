@@ -312,7 +312,7 @@ cron.schedule('* * * * *', async () => {
             {last_date_of_submission:{$lt:currentDate}, is_active:true},
             {$set:{is_active:false}}
         );
-        console.log(`${result.modifiedCount} assignments updated successfully`);
+        // console.log(`${result.modifiedCount} assignments updated successfully`);
 
     } catch (error) {
         console.error('Error updating assignments:', error);
