@@ -55,7 +55,7 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
 
         // API call
-        const easebuzzRes = await axios.post('https://testpay.easebuzz.in/payment/initiateLink', jsonToUrlEncoded(hashData));
+        const easebuzzRes = await axios.post('https://pay.easebuzz.in/payment/initiateLink', jsonToUrlEncoded(hashData));
 
 
         // Response
