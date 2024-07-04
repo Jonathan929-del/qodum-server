@@ -20,7 +20,6 @@ dotenv.config();
 
 // Initializing app
 admin.initializeApp({
-    // credential:admin.credential.cert(JSON.parse(fs.readFileSync('./qodum-9c179-firebase-adminsdk-zylgw-84904d0ba2.json', 'utf8')))
     credential:admin.credential.cert({
         type:process.env.TYPE,
         project_id:process.env.PROJECT_ID,
