@@ -60,7 +60,7 @@ mongoose.connect(process.env.MONGO_DB).then(() => console.log('Connected to the 
 
 
 // Server Port
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-    console.log(`Server Is Running On Port ${PORT}`);
-});
+// const PORT = process.env.PORT;
+// app.listen(PORT, () => {
+//     console.log(`Server Is Running On Port ${PORT}`);
+// });
