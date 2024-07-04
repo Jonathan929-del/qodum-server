@@ -1032,24 +1032,24 @@ router.get('/fetch-flash-messages', async (req, res) => {
 
 
 // Setting is active to be false if past last date of submission
-cron.schedule('* * * * *', async () => {
-    try{
+// cron.schedule('* * * * *', async () => {
+//     try{
 
-        const currentDate = new Date();
-        const snapshot = await db.collection('flash_messages').where('expires_on', '<=', currentDate).get();
+//         const currentDate = new Date();
+//         const snapshot = await db.collection('flash_messages').where('expires_on', '<=', currentDate).get();
     
-        const batch = db.batch();
-        snapshot.docs.forEach(doc => {
-          batch.delete(doc.ref);
-        });
+//         const batch = db.batch();
+//         snapshot.docs.forEach(doc => {
+//           batch.delete(doc.ref);
+//         });
     
-        await batch.commit();
-        console.log('Expired flash messages deleted successfully.');
+//         await batch.commit();
+//         console.log('Expired flash messages deleted successfully.');
 
-    } catch (error) {
-        console.error('Error updating assignments:', error);
-    }
-});
+//     } catch (error) {
+//         console.error('Error updating assignments:', error);
+//     }
+// });
 
 
 
