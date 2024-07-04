@@ -102,5 +102,33 @@ router.post('/overdues', async (req, res) => {
 
 
 
+// Fetching installment due on date
+router.post('/installment/due-on', async (req, res) => {
+    try {
+
+        // Request body
+        const {installment_name} = req.body;
+
+
+        // Student fee data
+        const installment = await Installment.findOne({name:installment_name}, {due_date:1});
+
+
+        // Installment due date
+        const installmentDueDate = new Date(`${installment.due_date.day}-${installment.due_date.month}-${installment.due_date.year}`);
+
+
+        // Response
+        res.status(200).json(installmentDueDate);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
