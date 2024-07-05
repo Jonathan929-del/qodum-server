@@ -1,6 +1,6 @@
 [build]
-  command = "npm start"  # or your build command
-  publish = "public"         # or your output directory
+  command = "npm run build"
+  publish = "public"
 
 [[redirects]]
   from = "/api/*"

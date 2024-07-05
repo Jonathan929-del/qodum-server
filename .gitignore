@@ -4,6 +4,5 @@
 # Ignore node_modules directory
 node_modules/
 .vercel
-
 # Local Netlify folder
 .netlify
