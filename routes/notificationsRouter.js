@@ -258,6 +258,69 @@ router.post('/send-class-notice', async (req, res) => {
 
 
 
+// Schedule class notice
+router.post('/schedule-class-notice', async (req, res) => {
+    try {
+
+        // Request body
+        const {title, body, topic, type, created_by, class_notice_id, img, schedule_date} = req.body;
+
+
+        // Message
+        const message = {
+            notification: {
+                title:title || 'New Notification',
+                body:body || 'You have a new message.'
+            },
+            topic:topic
+        };
+
+
+        // Schedule date
+        const scheduleDate = new Date(schedule_date);
+
+
+        // Validate schedule date
+        if(scheduleDate <= new Date()){
+            return res.status(400).send('Schedule date must be in the future.');
+        };
+
+
+        // Schedule the job
+        cron.schedule(`${scheduleDate.getUTCSeconds()} ${scheduleDate.getUTCMinutes()} ${scheduleDate.getUTCHours()} ${scheduleDate.getUTCDate()} ${scheduleDate.getUTCMonth() + 1} *`, 
+            async () => {
+                // Sending
+                await getMessaging().send(message);
+
+
+                // Saving the message to firestore
+                await db.collection('class_notices').add({
+                    topic,
+                    title:title || 'New Notification',
+                    body:body || 'You have a new message.',
+                    viewed:false,
+                    type:type || 'added_assignment',
+                    created_at:new Date(),
+                    class_notice_id,
+                    created_by,
+                    img
+                });
+            }
+        );
+
+
+        // Response
+        res.status(200).send('Class notice sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
 // Edit class notice
 router.post('/edit-class-notice', async (req, res) => {
     try {
@@ -535,7 +598,7 @@ router.post('/schedule-notice', async (req, res) => {
     try {
 
         // Request body
-        const {title, body, topic, type, created_by, notice_id, schedule_date} = req.body;
+        const {title, body, topic, type, created_by, notice_id, schedule_date, img} = req.body;
 
 
         // Message
@@ -574,7 +637,8 @@ router.post('/schedule-notice', async (req, res) => {
                     type:type || 'added_assignment',
                     created_at:new Date(),
                     created_by,
-                    notice_id
+                    notice_id,
+                    img
                 });
             }
         );
@@ -1059,15 +1123,60 @@ router.post('/create-flash-message', async (req, res) => {
     try {
 
         // Request body
-        const {message, expires_on} = req.body;
+        const {message, expires_on, img} = req.body;
 
     
         // Saving the message to firestore
         await db.collection('flash_messages').add({
             message,
             expires_on:new Date(expires_on),
-            created_at:new Date()
+            created_at:new Date(),
+            img
         });
+
+
+        // Response
+        res.status(200).send('Flash message sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
+// Schedule flash message
+router.post('/schedule-flash-message', async (req, res) => {
+    try {
+
+        // Request body
+        const {message, expires_on, schedule_date, img} = req.body;
+
+
+        // Schedule date
+        const scheduleDate = new Date(schedule_date);
+
+
+        // Validate schedule date
+        if(scheduleDate <= new Date()){
+            return res.status(400).send('Schedule date must be in the future.');
+        };
+
+
+        // Schedule the job
+        cron.schedule(`${scheduleDate.getUTCSeconds()} ${scheduleDate.getUTCMinutes()} ${scheduleDate.getUTCHours()} ${scheduleDate.getUTCDate()} ${scheduleDate.getUTCMonth() + 1} *`, 
+            async () => {
+                // Saving the message to firestore
+                await db.collection('flash_messages').add({
+                    message,
+                    expires_on:new Date(expires_on),
+                    created_at:new Date(),
+                    img
+                });
+            }
+        );
 
 
         // Response
