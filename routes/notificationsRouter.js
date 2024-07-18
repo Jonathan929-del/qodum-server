@@ -1097,7 +1097,7 @@ router.get('/fetch-flash-messages', async (req, res) => {
         res.status(200).json(flashMessages);
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json('Error fetching flash messages', err);
     }
 });
 
