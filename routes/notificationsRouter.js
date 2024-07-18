@@ -1216,48 +1216,6 @@ router.get('/fetch-flash-messages', async (req, res) => {
 
 
 
-// Schedule flash message
-router.post('/schedule-flash-message', async (req, res) => {
-    try {
-
-        // Request body
-        const {message, expires_on, schedule_date} = req.body;
-
-
-        // Schedule date
-        const scheduleDate = new Date(schedule_date);
-
-
-        // Validate schedule date
-        if(scheduleDate <= new Date()){
-            return res.status(400).send('Schedule date must be in the future.');
-        };
-
-
-        // Schedule the job
-        cron.schedule(`${scheduleDate.getUTCSeconds()} ${scheduleDate.getUTCMinutes()} ${scheduleDate.getUTCHours()} ${scheduleDate.getUTCDate()} ${scheduleDate.getUTCMonth() + 1} *`, 
-            async () => {
-                await db.collection('flash_messages').add({
-                    message,
-                    expires_on:new Date(expires_on),
-                    created_at:new Date()
-                });
-            }
-        );
-
-
-        // Response
-        res.status(200).send('Flash message sent successfully');
-
-    } catch (err) {
-        res.status(500).json(err.message);
-    }
-});
-
-
-
-
-
 // Setting is active to be false if past last date of submission
 cron.schedule('* * * * *', async () => {
     try{
