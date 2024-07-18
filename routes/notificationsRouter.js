@@ -528,6 +528,68 @@ router.post('/send-notice', async (req, res) => {
 
 
 
+// Schedule notice
+router.post('/schedule-notice', async (req, res) => {
+    try {
+
+        // Request body
+        const {title, body, topic, type, created_by, notice_id, schedule_date} = req.body;
+
+
+        // Message
+        const message = {
+            notification: {
+                title:title || 'New Notification',
+                body:body || 'You have a new message.'
+            },
+            topic:topic
+        };
+
+
+        // Schedule date
+        const scheduleDate = new Date(schedule_date);
+
+
+        // Validate schedule date
+        if(scheduleDate <= new Date()){
+            return res.status(400).send('Schedule date must be in the future.');
+        };
+
+
+        // Schedule the job
+        cron.schedule(`${scheduleDate.getUTCSeconds()} ${scheduleDate.getUTCMinutes()} ${scheduleDate.getUTCHours()} ${scheduleDate.getUTCDate()} ${scheduleDate.getUTCMonth() + 1} *`, 
+            async () => {
+                // Sending
+                await getMessaging().send(message);
+
+            
+                // Saving the message to firestore
+                await db.collection('notices').add({
+                    topic,
+                    title:title || 'New Notification',
+                    body:body || 'You have a new message.',
+                    viewed:false,
+                    type:type || 'added_assignment',
+                    created_at:new Date(),
+                    created_by,
+                    notice_id
+                });
+            }
+        );
+
+
+        // Response
+        res.status(200).send('Notice sent successfully');
+
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
+});
+
+
+
+
+
 // Edit notice
 router.post('/edit-notice', async (req, res) => {
     try {
@@ -1069,7 +1131,6 @@ router.post('/schedule-flash-message', async (req, res) => {
                     expires_on:new Date(expires_on),
                     created_at:new Date()
                 });
-                console.log('Saved');
             }
         );
 
