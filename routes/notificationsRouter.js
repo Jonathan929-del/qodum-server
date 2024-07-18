@@ -216,7 +216,7 @@ router.post('/send-class-notice', async (req, res) => {
     try {
 
         // Request body
-        const {title, body, topic, type, created_by, class_notice_id} = req.body;
+        const {title, body, topic, type, created_by, class_notice_id, img} = req.body;
 
         // Message
         const message = {
@@ -241,7 +241,8 @@ router.post('/send-class-notice', async (req, res) => {
             type:type || 'added_assignment',
             created_at:new Date(),
             class_notice_id,
-            created_by
+            created_by,
+            img
         });
 
 
@@ -487,7 +488,7 @@ router.post('/send-notice', async (req, res) => {
     try {
 
         // Request body
-        const {title, body, topic, type, created_by, notice_id} = req.body;
+        const {title, body, topic, type, created_by, notice_id, img} = req.body;
 
         // Message
         const message = {
@@ -512,7 +513,8 @@ router.post('/send-notice', async (req, res) => {
             type:type || 'added_assignment',
             created_at:new Date(),
             created_by,
-            notice_id
+            notice_id,
+            img
         });
 
 
