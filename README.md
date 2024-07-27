@@ -4,4 +4,4 @@ A server app for the "Qodum" mobile application, which is an app for a school ma
 . An option for notice messages (Notifications), with push notifications using Firebase messaging
 . A payment gateway for students to pay their fees
 
-The app was made with React Native and uses Firebase for messaging and notifications features.
+The server app was made with Node.js, Express.js, and MongoDB, and uses Firebase for messaging and notifications features.
