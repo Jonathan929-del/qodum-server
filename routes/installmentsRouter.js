@@ -76,15 +76,15 @@ router.post('/overdues', async (req, res) => {
 
         // Installment due amounts
         const installmentDueAmounts = i => {
-            const installmentHeads = studentFeeHeads.filter(h => h.installment === i.name || h.installment === 'All installments');
-            const installmentHeadsFilteredAmounts = installmentHeads.map(h => h.amounts.filter(a => a.name === i.name)).flat();
-            const amountsSum = totalNumberGenerator(installmentHeadsFilteredAmounts.map(a => Number(a.payable_amount === undefined ? a.value : a.last_rec_amount === 0 ? a.value : a.payable_amount)));
+            const installmentHeads = studentFeeHeads?.filter(h => h?.installment === i?.name || h?.installment === 'All installments');
+            const installmentHeadsFilteredAmounts = installmentHeads.map(h => h.amounts?.filter(a => a?.name === i?.name)).flat();
+            const amountsSum = totalNumberGenerator(installmentHeadsFilteredAmounts.map(a => Number(a?.payable_amount === undefined ? a?.value : a?.last_rec_amount === 0 ? a?.value : a?.payable_amount)));
             return(amountsSum);
         };
 
 
         // Unpaid installments
-        const unPaidInstallments = overdueInstallments.filter(i => {
+        const unPaidInstallments = overdueInstallments?.filter(i => {
             const installmentAmounts = installmentDueAmounts(i);
             return installmentAmounts > 0;
         });
@@ -94,7 +94,7 @@ router.post('/overdues', async (req, res) => {
         res.status(200).json(unPaidInstallments);
 
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.message);
     }
 });
 
