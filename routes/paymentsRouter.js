@@ -70,6 +70,58 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
 
 
+// Easy pay link
+router.post('/payment/easy-pay', async (req, res) => {
+    try {
+
+        // Request body
+        const {merchant_txn, amount, name, phone, email} = req.body;
+
+
+        // Generate hash
+        const generateHash = data => {
+            const hashString = `${data.key}|${data.merchant_txn}|${data.name}|${data.email}|${data.phone}|${data.amount}|||||||${process.env.EASEBUZZ_SALT}`;
+            return crypto.createHash('sha512').update(hashString).digest('hex');
+        };
+
+
+        // Hash data
+        const hashData = {
+            merchant_txn,
+            key:process.env.EASEBUZZ_KEY,
+            email,
+            name,
+            amount,
+            phone
+        };
+        hashData.hash = generateHash(hashData);
+
+
+
+        // Convert JSON object to url encoded form
+        const jsonToUrlEncoded = json => {
+            return Object.keys(json)
+              .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
+              .join('&');
+        };
+
+
+        // API call
+        const easebuzzRes = await axios.post('https://dashboard.easebuzz.in/easycollect/v1/create', jsonToUrlEncoded(hashData));
+
+
+        // Response
+        res.status(200).send(easebuzzRes.data.data.payment_url || 'error');
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+
+
+
+
 // Create payment
 router.post('/payment/create', async (req, res) => {
     try {
