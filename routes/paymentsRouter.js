@@ -10,6 +10,8 @@ import Payment from '../models/Payment.js';
 
 // Defining router
 const router = express.Router();
+router.use(express.urlencoded({ extended: true }));
+router.use(express.json());
 
 
 
@@ -201,7 +203,8 @@ router.post('/payment/easy-pay', async (req, res) => {
             // Response
             res.status(200).send(easebuzzRes.data.data.payment_url || 'error');
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+            res.status(500).send(err.message);
         }
 
 
