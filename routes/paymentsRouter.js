@@ -320,7 +320,7 @@ router.post('/webhook', (req, res) => {
         console.log('Received webhook data:', webhookData);
       
         // Response
-        res.status(200).send('Webhook received');
+        res.status(200).send(webhookData);
 
     }catch(err){
         res.status(500).send(err);  
