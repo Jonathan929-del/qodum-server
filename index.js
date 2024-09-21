@@ -29,6 +29,7 @@ app.use(cors({origin:'*'}));
 app.use(express.json());
 app.use(morgan('common'));
 app.use(bodyParser.json());
+app.use(express.urlencoded({extended:true}));
 app.use(bodyParser.urlencoded({extended:false}));
 
 
