@@ -2,6 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import express from 'express';
+import bodyParser from 'body-parser';
 import Payment from '../models/Payment.js';
 
 
@@ -10,8 +11,9 @@ import Payment from '../models/Payment.js';
 
 // Defining router
 const router = express.Router();
-router.use(express.urlencoded({ extended: true }));
+router.use(express.urlencoded({extended:true}));
 router.use(express.json());
+router.use(bodyParser.json());
 
 
 
@@ -218,95 +220,70 @@ router.post('/payment/easy-pay', async (req, res) => {
 
 
 
-// Check payment status
-router.post('/payment/status', async (req, res) => {
+router.post('/status', async (req, res) => {
     try {
 
         // Request body
-        const {txnid} = req.body;
+        const {txnId} = req.body;
 
 
-        // Generate hash
-        const generateHash = data => {
-            const hashString = `${data.key}|${data.txnid}|${process.env.EASEBUZZ_SALT_TEST}`;
-            return crypto.createHash('sha512').update(hashString).digest('hex');
+        // Empty transaction id validation
+        if (!txnId) {
+            return res.status(400).json({
+                success:false,
+                error:'Transaction ID (txn_id) is required',
+            });
         };
 
 
-        // Hash data
-        const hashData = {
-            txnid,
-            key:process.env.EASEBUZZ_KEY_TEST
-
-        };
-        hashData.hash = generateHash(hashData);
+        // Merchnat key and salt
+        const MERCHANT_KEY = '2PBP7IABZ2';
+        const MERCHANT_SALT = 'DAH88E3UWQ';
 
 
-
-        // Convert JSON object to url encoded form
-        const jsonToUrlEncoded = json => {
-            return Object.keys(json)
-              .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
-              .join('&');
-        };
+        // Hash string
+        const hashString = `${MERCHANT_KEY}|${txnId}|${MERCHANT_SALT}`;
+        const hash = crypto.createHash('sha512').update(hashString).digest('hex');
 
 
-        // API call
-        const easebuzzRes = await axios.post('https://testdashboard.easebuzz.in/transaction/v2.1/retrieve', jsonToUrlEncoded(hashData));
+        // Params for the post request
+        const postData = new URLSearchParams({
+            key:MERCHANT_KEY,
+            txnid:txnId,
+            hash:hash
+        });
 
 
+        // Post request
+        const response = await axios.post(
+            'https://testdashboard.easebuzz.in/transaction/v2.1/retrieve',
+            postData.toString(),
+            {
+                headers: {
+                    'Content-Type':'application/x-www-form-urlencoded',
+                }
+            }
+        );
+        
+        
         // Response
-        res.status(200).send(easebuzzRes.data || 'error');
+        if(response?.data?.msg === 'Transaction not found'){
+            res.status(200).send('Transaction not found');
+        }else if(response?.data?.msg.length > 0 && response?.data?.msg[0]?.status === 'success'){
+            res.status(200).send({
+                status:'success',
+                amount:response?.data?.msg[0]?.amount
+            });
+        }else if(response?.data?.msg.length > 0 && response?.data?.msg[0]?.status === 'failure'){
+            res.status(200).send({
+                status:'failure'
+            });
+        };
 
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+    }catch(error){
+        res.status(500).json(error);
+    };
 });
-// // Check payment status
-// router.post('/payment/status', async (req, res) => {
-//     try {
-
-//         // Request body
-//         const {merchant_txn} = req.body;
-
-
-//         // Generate hash
-//         const generateHash = data => {
-//             const hashString = `${data.key}|${data.merchant_txn}|${process.env.EASEBUZZ_SALT}`;
-//             return crypto.createHash('sha512').update(hashString).digest('hex');
-//         };
-
-
-//         // Hash data
-//         const hashData = {
-//             merchant_txn,
-//             key:process.env.EASEBUZZ_KEY,
-
-//         };
-//         hashData.hash = generateHash(hashData);
-
-
-
-//         // Convert JSON object to url encoded form
-//         const jsonToUrlEncoded = json => {
-//             return Object.keys(json)
-//               .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
-//               .join('&');
-//         };
-
-
-//         // API call
-//         // const easebuzzRes = await axios.post('https://dashboard.easebuzz.in/easycollect/v1/get', jsonToUrlEncoded(hashData));
-//         const easebuzzRes = await axios.post('https://testdashboard.easebuzz.in/easycollect/v1/get', jsonToUrlEncoded(hashData));
-
-
-//         // Response
-//         res.status(200).send(easebuzzRes.data || 'error');
-
-//     } catch (err) {
-//         res.status(500).send(err.message);
-//     }
-// });
 
 
 
@@ -315,19 +292,24 @@ router.post('/payment/status', async (req, res) => {
 // API route to accept webhook data
 router.post('/webhook', (req, res) => {
     try {
-        
-        // Webhook data
-        const webhookData = req.body;
-      
-        // Data
-        console.log('Received webhook data:', webhookData);
-      
-        // Response
-        res.status(200).send(webhookData);
 
-    }catch(err){
-        res.status(500).send(err);  
-    };
+        const webhookData = req.body;
+        console.log('Received webhook data:', webhookData);
+    
+        // Verify the hash
+        const isHashValid = verifyHash(webhookData, webhookData.hash);
+    
+        if(isHashValid){
+            res.status(200).send('Webhook received and hash verified');
+        }else{
+            console.error('Invalid hash!');
+            res.status(400).send('Invalid hash');
+        };
+
+    } catch (err) {
+        console.error('Error processing webhook:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 
