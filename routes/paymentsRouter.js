@@ -149,11 +149,11 @@ router.post('/payment/easy-pay', async (req, res) => {
         // Validations
         if(!merchant_txn || merchant_txn.length === 0){
             res.status(400).send({status:'error', message:'Please enter merchant_txn'});
-        }else if(!amount ||  !containsOnlyNumbers(amount)){
+        }else if(!amount || !containsOnlyNumbers(amount)){
             res.status(400).send({status:'error', message:'Please enter a numeric value for the amount'});
         }else if(!name){
             res.status(400).send({status:'error', message:'Please enter a name'});
-        }else if(!phone || !containsOnlyNumbers(phone) || Math.abs(phone).toString().length !== 10){
+        }else if(!phone || !containsOnlyNumbers(phone) || Math.abs(phone).toString().length !== 10 || typeof phone === 'number'){
             res.status(400).send({status:'error', message:'Please enter a numeric value for the phone number'});
         }else if(!email || !isValidEmail(email)){
             res.status(400).send({status:'error', message:'Please enter a valid email'});
