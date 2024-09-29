@@ -527,7 +527,7 @@ router.post('/payment/status', async (req, res) => {
 
 // Temporary storage for webhook data (in memory)
 let webhookData = {};
-router.post('/webhook', (req, res) => {
+router.post('/webhook', async (req, res) => {
     try {
         webhookData = req.body;  // Store the received webhook data in memory
         console.log('Received webhook data:', webhookData);  // Log it to the server console
@@ -541,8 +541,12 @@ router.post('/webhook', (req, res) => {
 });
 
 // API route to expose the latest webhook data
-router.get('/view-webhook', (req, res) => {
-    res.status(200).json(webhookData);
+router.get('/view-webhook', async (req, res) => {
+    try {
+        res.status(200).json(webhookData);
+    }catch (err){
+        res.status(500).send(err);
+    };
 });
 
 
