@@ -14,6 +14,7 @@ const router = express.Router();
 router.use(express.urlencoded({extended:true}));
 router.use(express.json());
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended:true}));
 
 
 
