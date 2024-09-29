@@ -337,7 +337,7 @@ router.post('/payment/insta-collect', async (req, res) => {
         // Constants
         const key = process.env.NEW_EASEBUZZ_KEY;
         const salt = process.env.NEW_EASEBUZZ_SALT;
-        const per_transaction_amount = amount;
+        const per_transaction_amount = 1;
         const udf1 = 'customValue1'; 
         const udf2 = 'customValue2'; 
         const udf3 = 'customValue3'; 
@@ -524,27 +524,24 @@ router.post('/payment/status', async (req, res) => {
 
 
 
-// API route to accept webhook data
+// Temporary storage for webhook data (in memory)
+let webhookData = {};
 router.post('/webhook', (req, res) => {
     try {
+        webhookData = req.body;  // Store the received webhook data in memory
+        console.log('Received webhook data:', webhookData);  // Log it to the server console
 
-        const webhookData = req.body;
-        console.log('Received webhook data:', webhookData);
-    
-        // Verify the hash
-        const isHashValid = verifyHash(webhookData, webhookData.hash);
-    
-        if(isHashValid){
-            res.status(200).send('Webhook received and hash verified');
-        }else{
-            console.error('Invalid hash!');
-            res.status(400).send('Invalid hash');
-        };
-
+        // Respond back to Easebuzz
+        res.status(200).send('Webhook received successfully');
     } catch (err) {
         console.error('Error processing webhook:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).send('Internal Server Error');
     }
+});
+
+// API route to expose the latest webhook data
+router.get('/view-webhook', (req, res) => {
+    res.status(200).json(webhookData);
 });
 
 
