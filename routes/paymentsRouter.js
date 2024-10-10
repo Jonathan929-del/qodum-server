@@ -131,7 +131,7 @@ router.post('/payment/initiate-payment', async (req, res) => {
     try {
 
         // Request body
-        const {txnid, amount, productinfo, firstname, phone, email, surl, furl} = req.body;
+        const {txnid, amount, productinfo, firstname, phone, email} = req.body;
 
 
         // Contains only numbers function
@@ -148,23 +148,22 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
 
         // Validations
-        // if(!txnid || txnid.length === 0){
-        //     res.status(400).send({status:'error', message:'Please enter txnid'});
-        // }else if(!amount || !containsOnlyNumbers(amount)){
-        //     res.status(400).send({status:'error', message:'Please enter a numeric value for the amount'});
-        // }else if(!name){
-        //     res.status(400).send({status:'error', message:'Please enter a name'});
-        // }else if(!phone || !containsOnlyNumbers(phone) || Math.abs(phone).toString().length !== 10 || typeof phone === 'number'){
-        //     res.status(400).send({status:'error', message:'Please enter a numeric value for the phone number'});
-        // }else if(!email || !isValidEmail(email)){
-        //     res.status(400).send({status:'error', message:'Please enter a valid email'});
-        // };
+        if(!txnid || txnid.length === 0){
+            res.status(400).send({status:'error', message:'Please enter txnid'});
+        }else if(!amount || !containsOnlyNumbers(amount)){
+            res.status(400).send({status:'error', message:'Please enter a numeric value for the amount'});
+        }else if(!firstname){
+            res.status(400).send({status:'error', message:'Please enter a firstname'});
+        }else if(!phone || !containsOnlyNumbers(phone) || Math.abs(phone).toString().length !== 10 || typeof phone === 'number'){
+            res.status(400).send({status:'error', message:'Please enter a numeric value for the phone number'});
+        }else if(!email || !isValidEmail(email)){
+            res.status(400).send({status:'error', message:'Please enter a valid email'});
+        };
 
 
         // Generate hash
         const generateHash = data => {
-            // const hashString = `${data.key}|${data.merchant_txn}|${data.name}|${data.email}|${data.phone}|${data.amount}|||||||${process.env.EASEBUZZ_SALT_TEST}`;
-            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT_TEST}`;
+            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
@@ -172,14 +171,14 @@ router.post('/payment/initiate-payment', async (req, res) => {
         // Hash data
         const hashData = {
             txnid,
-            key:process.env.EASEBUZZ_KEY_TEST,
+            key:process.env.EASEBUZZ_KEY,
             email,
             firstname,
             amount,
             phone,
             productinfo,
-            surl,
-            furl
+            surl:'https://test.com/success',
+            furl:'https://test.com/failure'
         };
         hashData.hash = generateHash(hashData);
 
@@ -191,13 +190,15 @@ router.post('/payment/initiate-payment', async (req, res) => {
         // API call
         try {
             console.log(postData);
-            const easebuzzRes = await axios.post('https://testpay.easebuzz.in/payment/initiateLink', postData);
+            const easebuzzRes = await axios.post('https://pay.easebuzz.in/payment/initiateLink', postData);
             res.status(200).send(easebuzzRes.data);
         } catch (error) {
+            console.log(error);
             res.status(500).send(error);
         }
 
     }catch(err){
+        console.log(err);
         res.status(500).send(err);
     }
 });
@@ -518,34 +519,6 @@ router.post('/payment/status', async (req, res) => {
 
     }catch(error){
         res.status(500).json(error);
-    };
-});
-
-
-
-
-
-// Temporary storage for webhook data (in memory)
-let webhookData = {};
-router.post('/webhook', async (req, res) => {
-    try {
-        webhookData = req.body;  // Store the received webhook data in memory
-        console.log('Received webhook data:', webhookData);  // Log it to the server console
-
-        // Respond back to Easebuzz
-        res.status(200).send('Webhook received successfully');
-    } catch (err) {
-        console.error('Error processing webhook:', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// API route to expose the latest webhook data
-router.get('/view-webhook', async (req, res) => {
-    try {
-        res.status(200).json(webhookData);
-    }catch (err){
-        res.status(500).send(err);
     };
 });
 

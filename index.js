@@ -17,6 +17,7 @@ import notificationsRouter from './routes/notificationsRouter.js';
 import feeTypesRouter from './routes/feeTypesRouter.js';
 import installmentsRouter from './routes/installmentsRouter.js';
 import smsTemplatesRouter from './routes/smsTemplatesRouter.js';
+import TranactionsRouter from './routes/transactionsRouter.js';
 
 
 
@@ -48,6 +49,7 @@ app.use('/payments', paymentsRouter);
 app.use('/fee-types', feeTypesRouter);
 app.use('/installments', installmentsRouter);
 app.use('/sms-templates', smsTemplatesRouter);
+app.use('/transactions', TranactionsRouter);
 
 
 
