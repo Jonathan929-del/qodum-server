@@ -18,6 +18,11 @@ import feeTypesRouter from './routes/feeTypesRouter.js';
 import installmentsRouter from './routes/installmentsRouter.js';
 import smsTemplatesRouter from './routes/smsTemplatesRouter.js';
 import TranactionsRouter from './routes/transactionsRouter.js';
+import AcademicYearsRouter from './routes/academicYearsRouter.js';
+import StaffApplicationsRouter from './routes/staffApplicationsRouter.js';
+import StaffTypesRouter from './routes/staffTypesRouter.js';
+import DesignationsRouter from './routes/designationsRouter.js';
+import DepartmentsRouter from './routes/departmentsRouter.js';
 
 
 
@@ -50,6 +55,11 @@ app.use('/fee-types', feeTypesRouter);
 app.use('/installments', installmentsRouter);
 app.use('/sms-templates', smsTemplatesRouter);
 app.use('/transactions', TranactionsRouter);
+app.use('/academic-years', AcademicYearsRouter);
+app.use('/staff-applications', StaffApplicationsRouter);
+app.use('/staff-types', StaffTypesRouter);
+app.use('/designations', DesignationsRouter);
+app.use('/departments', DepartmentsRouter);
 
 
 
