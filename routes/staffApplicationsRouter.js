@@ -27,13 +27,13 @@ router.post('/staff-application/candidate-application', async (req, res) => {
             last_name,
             email,
             mobile,
+            address,
             father_or_spouse_name,
             staff_type,
             designation,
             department,
             gender,
             dob,
-            address
         } = req.body;
 
 
@@ -91,7 +91,6 @@ router.post('/staff-application/candidate-application', async (req, res) => {
                 emergency_mobile:0,
                 wing:'',
                 is_active:true,
-                profile_picture:'',
                 maritial_status:'Married',
                 qualification:'',
                 date_of_birth:dob || new Date(),
