@@ -59,7 +59,6 @@ export const validateLoginInputs = (adm_no, password) => {
 
 // Validate apply for admission page
 export const validateApplyForAdmission = ({
-    reg_no,
     class_name,
     name,
     middle_name,
@@ -83,9 +82,6 @@ export const validateApplyForAdmission = ({
     const errors = {};
     const containsOnlyNumbers = str => {
         return /^\d+$/.test(str);
-    };
-    if(!reg_no){
-        errors.message = 'Please enter registration no.';
     };
     if(!class_name){
         errors.message = 'Please enter class name';

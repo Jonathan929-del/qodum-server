@@ -220,7 +220,6 @@ router.post('/student/apply-for-admission', async (req, res) => {
 
         // Request body
         const {
-            reg_no,
             dob,
             class_name,
             name,
@@ -246,7 +245,6 @@ router.post('/student/apply-for-admission', async (req, res) => {
 
         // Validations
         const {valid, errors} = validateApplyForAdmission({
-            reg_no,
             class_name,
             name,
             middle_name,
@@ -272,19 +270,22 @@ router.post('/student/apply-for-admission', async (req, res) => {
             res.send(errors);
             return;
         };
-        const students = await Student.find({}, {'student.reg_no':1});
-        const studentsRegNos = students.map(s => s.student.reg_no);
-        if(studentsRegNos.includes(reg_no)){
-            errors.status = 'failure';
-            errors.message = 'Please enter a unique registration no.';
-            res.send(errors);
-            return;
-        };
-
 
 
         // Academic Years
         const activeAcademicYear = await AcademicYear.findOne({is_active:true});
+
+
+        // Generating new registration number
+        const lastStudent = await Student.find({}, {'student.reg_no':1}).sort({_id:-1}).limit(1);
+        const lastStudentRegNo = lastStudent[0].student.reg_no;
+        const incrementRegNo = regNo => {
+            const match = regNo.match(/(\d+)$/);
+            if (!match) throw new Error('No number found at the end of the string');         
+            const numberPart = match[0];
+            const incrementedNumber = (parseInt(numberPart, 10) + 1).toString().padStart(numberPart.length, '0');          
+            return regNo.replace(numberPart, incrementedNumber);
+        };
 
 
         // Registering the student
@@ -301,7 +302,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
                 is_online:true,
                 image:'',
                 enquiry_no:'',
-                reg_no,
+                reg_no:incrementRegNo(lastStudentRegNo),
                 pros_no:'',
                 amount:0,
                 date:new Date(),

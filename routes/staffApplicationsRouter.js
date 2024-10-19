@@ -63,7 +63,7 @@ router.post('/staff-application/candidate-application', async (req, res) => {
 
 
         // Staff count
-        const staffCount = await Staff.countDocuments();
+        const staffCount = await StaffApplication.countDocuments();
 
 
         // Registering the student
