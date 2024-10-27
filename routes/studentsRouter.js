@@ -7,6 +7,7 @@ import AdmittedStudent from '../models/AdmittedStudent.js';
 import {validateAdmNo, validateApplyForAdmission, validateLoginInputs, validateRegisterInputs} from '../validations/auth.js';
 import AcademicYear from '../models/AcademicYear.js';
 import Student from '../models/Student.js';
+import Admission from '../models/Admission.js';
 
 
 
@@ -276,16 +277,29 @@ router.post('/student/apply-for-admission', async (req, res) => {
         const activeAcademicYear = await AcademicYear.findOne({is_active:true});
 
 
+        // Students
+        const students = await Student.countDocuments();
+
+
         // Generating new registration number
-        const lastStudent = await Student.find({}, {'student.reg_no':1}).sort({_id:-1}).limit(1);
-        const lastStudentRegNo = lastStudent[0].student.reg_no;
-        const incrementRegNo = regNo => {
-            const match = regNo.match(/(\d+)$/);
-            if (!match) throw new Error('No number found at the end of the string');         
-            const numberPart = match[0];
-            const incrementedNumber = (parseInt(numberPart, 10) + 1).toString().padStart(numberPart.length, '0');          
-            return regNo.replace(numberPart, incrementedNumber);
+        let substringValue;
+        if(students < 9){
+            substringValue = 0;
+        }else if(students >= 9){
+            substringValue = 1;
+        }else if(students >= 99){
+            substringValue = 2;
+        }else if(students >= 999){
+            substringValue = 3;
+        }else if(students >= 9999){
+            substringValue = 4;
+        }else if(students >= 99999){
+            substringValue = 5;
+        }else if(students >= 999999){
+            substringValue = 6;
         };
+        const admissionNumber = await Admission.findOne({setting_type:'Registration No. (Online)'});
+        const newAdmissionNo = admissionNumber ? `${admissionNumber?.prefix}${admissionNumber?.lead_zero.substring(substringValue, admissionNumber?.lead_zero?.length - 1)}${students + 1}${admissionNumber?.suffix}` : '';
 
 
         // Registering the student
@@ -302,7 +316,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
                 is_online:true,
                 image:'',
                 enquiry_no:'',
-                reg_no:incrementRegNo(lastStudentRegNo),
+                reg_no:newAdmissionNo,
                 pros_no:'',
                 amount:0,
                 date:new Date(),
@@ -471,6 +485,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
         });
 
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 });
