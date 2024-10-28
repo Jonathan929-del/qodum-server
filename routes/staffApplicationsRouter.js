@@ -91,8 +91,10 @@ router.post('/staff-application/candidate-application', async (req, res) => {
             // Session
             session:activeAcademicYear.year_name,
 
+
             // Is up for admission
             is_up_for_admission:false,
+
 
             // Staff registration
             staff_registration:{

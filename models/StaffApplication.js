@@ -24,6 +24,7 @@ const StaffApplicationSchema = new mongoose.Schema(
             teacher_id:{type:String},
             cbse_code:{type:String},
             first_name_title:{type:String, required:true},
+            first_name:{type:String, required:true},
             middle_name:{type:String},
             last_name:{type:String},
             gender:{type:String},
