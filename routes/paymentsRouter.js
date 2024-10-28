@@ -163,7 +163,7 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
         // Generate hash
         const generateHash = data => {
-            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT_TEST}`;
+            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
@@ -171,8 +171,7 @@ router.post('/payment/initiate-payment', async (req, res) => {
         // Hash data
         const hashData = {
             txnid,
-            key:process.env.EASEBUZZ_KEY_TEST,
-            // key:process.env.EASEBUZZ_KEY,
+            key:process.env.EASEBUZZ_KEY,
             email,
             firstname,
             amount,
