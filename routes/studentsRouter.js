@@ -302,7 +302,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
 
 
         // Registering the student
-        await Student.create({
+        const newStudent = await Student.create({
 
             // Session
             session:activeAcademicYear.year_name,
@@ -480,7 +480,8 @@ router.post('/student/apply-for-admission', async (req, res) => {
         // Return
         res.status(201).send({
             status:'success',
-            message:'Successfull registration'
+            message:'Successfull registration',
+            student:newStudent
         });
 
     } catch (err) {
