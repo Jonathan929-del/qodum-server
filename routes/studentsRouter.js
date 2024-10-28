@@ -221,6 +221,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
 
         // Request body
         const {
+            image,
             dob,
             class_name,
             name,
@@ -248,8 +249,6 @@ router.post('/student/apply-for-admission', async (req, res) => {
         const {valid, errors} = validateApplyForAdmission({
             class_name,
             name,
-            middle_name,
-            last_name,
             gender,
             father_name,
             father_occupation,
@@ -314,7 +313,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
                 // 1
                 is_up_for_admission:false,
                 is_online:true,
-                image:'',
+                image,
                 enquiry_no:'',
                 reg_no:newAdmissionNo,
                 pros_no:'',

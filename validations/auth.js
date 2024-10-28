@@ -61,8 +61,6 @@ export const validateLoginInputs = (adm_no, password) => {
 export const validateApplyForAdmission = ({
     class_name,
     name,
-    middle_name,
-    last_name,
     gender,
     father_name,
     father_occupation,
@@ -88,12 +86,6 @@ export const validateApplyForAdmission = ({
     };
     if(!name){
         errors.message = 'Please enter student name';
-    };
-    if(!middle_name){
-        errors.message = 'Please enter student middle name';
-    };
-    if(!last_name){
-        errors.message = 'Please enter student last name';
     };
     if(!gender){
         errors.message = 'Please enter student gender';
