@@ -17,7 +17,12 @@ const StaffApplicationSchema = new mongoose.Schema(
 
         // Staff registration
         staff_registration:{
-            pref_no:{type:Number, required:true, unique:true},
+            post:{type:String, required:true},
+            reg_no:{type:String, required:true, unique:true},
+            employee_code:{type:String, required:true, unique:true},
+            approved_teacher:{type:String},
+            teacher_id:{type:String},
+            cbse_code:{type:String},
             first_name_title:{type:String, required:true},
             first_name:{type:String, required:true},
             middle_name:{type:String},
@@ -27,7 +32,7 @@ const StaffApplicationSchema = new mongoose.Schema(
             alternate_email:{type:String},
             phone:{type:Number},
             mobile:{type:Number, required:true},
-            alternate_mobile:{type:Number},
+            whatsapp_mobile:{type:Number},
             emergency_mobile:{type:Number},
             wing:{type:String},
             is_active:{type:Boolean},
@@ -39,7 +44,7 @@ const StaffApplicationSchema = new mongoose.Schema(
             date_of_joining:{type:Date},
             date_of_retire:{type:Date},
             date_of_retire_is_extend:{type:Boolean},
-            address:{type:String},
+            permenant_address:{type:String},
             current_address:{type:String},
             father_or_spouse_name:{type:String, required:true},
             father_or_spouse_mobile:{type:Number},
@@ -49,12 +54,16 @@ const StaffApplicationSchema = new mongoose.Schema(
             designation:{type:String, required:true},
             department:{type:String, required:true},
             religion:{type:String},
-            aadhar_card_no:{type:Number},
+            aadhar_card_no:{type:Number}
         },
 
 
         // Staff educational details
         staff_educational_details:{Array},
+
+
+        // Staff experience details
+        staff_experience_details:{Array},
 
 
         // Staff document details

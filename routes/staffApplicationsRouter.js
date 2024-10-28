@@ -3,7 +3,7 @@ import express from 'express';
 import AcademicYear from '../models/AcademicYear.js';
 import StaffApplication from '../models/StaffApplication.js';
 import {validateCandidateApplication} from '../validations/auth.js';
-import Staff from '../models/Staff.js';
+import StaffAdmissionNumber from '../models/StaffAdmissionNumber.js';
 
 
 
@@ -22,6 +22,8 @@ router.post('/staff-application/candidate-application', async (req, res) => {
 
         // Request body
         const {
+            post,
+            profile_picture,
             first_name,
             middle_name,
             last_name,
@@ -39,9 +41,8 @@ router.post('/staff-application/candidate-application', async (req, res) => {
 
         // Validations
         const {valid, errors} = validateCandidateApplication({
+            post,
             first_name,
-            middle_name,
-            last_name,
             email,
             mobile,
             father_or_spouse_name,
@@ -64,6 +65,24 @@ router.post('/staff-application/candidate-application', async (req, res) => {
 
         // Staff count
         const staffCount = await StaffApplication.countDocuments();
+        let substringValue;
+        if(staffCount < 9){
+            substringValue = 0;
+        }else if(staffCount >= 9){
+            substringValue = 1;
+        }else if(staffCount >= 99){
+            substringValue = 2;
+        }else if(staffCount >= 999){
+            substringValue = 3;
+        }else if(staffCount >= 9999){
+            substringValue = 4;
+        }else if(staffCount >= 99999){
+            substringValue = 5;
+        }else if(staffCount >= 999999){
+            substringValue = 6;
+        };
+        const admissionNumber = await StaffAdmissionNumber.findOne({setting_type:'Applicant Reg. No.'});
+        const newRegNo = admissionNumber ? `${admissionNumber?.prefix}${admissionNumber?.lead_zero.substring(substringValue, admissionNumber?.lead_zero?.length - 1)}${staffCount + 1}${admissionNumber?.suffix}` : '';
 
 
         // Registering the student
@@ -77,30 +96,36 @@ router.post('/staff-application/candidate-application', async (req, res) => {
 
             // Staff registration
             staff_registration:{
-                pref_no:staffCount + 1,
-                first_name_title:gender === 'Male' ? 'Mr.' : 'Mrs.',
-                first_name:first_name,
-                middle_name,
-                last_name,
+                post,
+                reg_no:newRegNo || Math.floor(Math.random() * 100000),
+                employee_code:newRegNo || Math.floor(Math.random() * 100000),
+                approved_teacher:'',
+                teacher_id:'',
+                cbse_code:'',
+                first_name_title:'Mr.',
+                first_name,
+                middle_name:middle_name,
+                last_name:last_name,
                 gender,
-                email:'',
+                email,
                 alternate_email:'',
-                phone:'',
+                phone:0,
                 mobile,
-                alternate_mobile:0,
+                whatsapp_mobile:0,
                 emergency_mobile:0,
                 wing:'',
                 is_active:true,
+                profile_picture,
                 maritial_status:'Married',
                 qualification:'',
-                date_of_birth:dob || new Date(),
+                date_of_birth:dob,
                 date_of_anniversary:new Date(),
                 date_of_joining:new Date(),
                 date_of_retire:new Date(),
                 date_of_retire_is_extend:false,
-                address,
-                current_address:'',
-                father_or_spouse_name:father_or_spouse_name,
+                permenant_address:'',
+                current_address:address,
+                father_or_spouse_name,
                 father_or_spouse_mobile:0,
                 father_or_spouse_relation:'',
                 blood_group:'',
@@ -108,12 +133,16 @@ router.post('/staff-application/candidate-application', async (req, res) => {
                 designation,
                 department,
                 religion:'',
-                aadhar_card_no:0,
+                aadhar_card_no:0
             },
 
 
             // Staff educational details
             staff_educational_details:[],
+
+
+            // Staff experience details
+            staff_experience_details:[],
 
 
             // Staff document details

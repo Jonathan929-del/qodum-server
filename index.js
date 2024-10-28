@@ -24,6 +24,7 @@ import StaffTypesRouter from './routes/staffTypesRouter.js';
 import DesignationsRouter from './routes/designationsRouter.js';
 import DepartmentsRouter from './routes/departmentsRouter.js';
 import AdmissionStatesRouter from './routes/admissionStatesRouter.js';
+import jobsRouter from './routes/jobsRouter.js';
 
 
 
@@ -62,6 +63,7 @@ app.use('/staff-types', StaffTypesRouter);
 app.use('/designations', DesignationsRouter);
 app.use('/departments', DepartmentsRouter);
 app.use('/admission-states', AdmissionStatesRouter);
+app.use('/jobs', jobsRouter);
 
 
 

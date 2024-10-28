@@ -144,9 +144,8 @@ export const validateApplyForAdmission = ({
 
 // Validate candidate application
 export const validateCandidateApplication = ({
+    post,
     first_name,
-    middle_name,
-    last_name,
     email,
     mobile,
     father_or_spouse_name,
@@ -163,11 +162,8 @@ export const validateCandidateApplication = ({
     if(!first_name){
         errors.message = 'Please enter staff first name';
     };
-    if(!middle_name){
-        errors.message = 'Please enter staff middle name';
-    };
-    if(!last_name){
-        errors.message = 'Please enter staff last name';
+    if(!post){
+        errors.message = 'Please enter select post';
     };
     if(!email){
         errors.message = 'Please enter staff email';
