@@ -27,6 +27,7 @@ import AdmissionStatesRouter from './routes/admissionStatesRouter.js';
 import jobsRouter from './routes/jobsRouter.js';
 import stationaryDetailsRouter from './routes/stationaryDetailsRouter.js';
 import enquiriesRouter from './routes/enquiriesRouter.js';
+import guideLinesRouter from './routes/guidelinesRouter.js';
 
 
 
@@ -68,6 +69,7 @@ app.use('/admission-states', AdmissionStatesRouter);
 app.use('/jobs', jobsRouter);
 app.use('/stationary-details', stationaryDetailsRouter);
 app.use('/enquiries', enquiriesRouter);
+app.use('/guide-lines', guideLinesRouter);
 
 
 
