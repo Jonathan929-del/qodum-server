@@ -307,7 +307,7 @@ router.post('/payment/check-easy-pay', async (req, res) => {
                 }
             });
             res.status(200).send({
-                status:easebuzzRes.data.data.state ? easebuzzRes.data.data.payment_made === 1 ? 'completed' : 'cancelled' : 'cancelled'
+                status:easebuzzRes.data.data.payment_made === 1 ? 'completed' : 'cancelled'
             });
             res.send(easebuzzRes.data);
         } catch (error) {
