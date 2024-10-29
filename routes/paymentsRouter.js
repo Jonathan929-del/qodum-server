@@ -206,38 +206,6 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
 
 
-// Initiate seamless
-router.post('/payment/initiate-seamless', async (req, res) => {
-    try {
-
-        // Request body
-        const {access_key, payment_mode, upi_va, upi_qr, pay_later_app, request_mode} = req.body;
-
-
-        // Params for the post request
-        const postData = new URLSearchParams({access_key, payment_mode, upi_va, upi_qr, pay_later_app, request_mode});
-
-
-        // API call
-        try {
-            const easebuzzRes = await axios.post('https://testpay.easebuzz.in/initiate_seamless_payment/', postData);
-            console.log(easebuzzRes.data);
-            res.status(200).send(easebuzzRes.data);
-        } catch (error) {
-            console.log(error);
-            res.status(500).send(error);
-        }
-
-    }catch(err){
-        console.log(err);
-        res.status(500).send(err);
-    }
-});
-
-
-
-
-
 // Easy pay link
 router.post('/payment/easy-pay', async (req, res) => {
     try {
@@ -296,6 +264,52 @@ router.post('/payment/easy-pay', async (req, res) => {
         try {
             const easebuzzRes = await axios.post('https://testdashboard.easebuzz.in/easycollect/v1/create', hashData);
             res.status(200).send(easebuzzRes.data.data.payment_url || 'error');
+        } catch (error) {
+            res.status(500).send(error);
+        }
+
+    }catch(err){
+        res.status(500).send(err);
+    }
+});
+
+
+
+
+
+// Check easy pay payment
+router.post('/payment/check-easy-pay', async (req, res) => {
+    try {
+
+        // Request body
+        const {merchant_txn} = req.body;
+
+
+        // Validations
+        if(!merchant_txn || merchant_txn.length === 0){
+            res.status(400).send({status:'error', message:'Please enter merchant_txn'});
+        };
+
+
+        // Generate hash
+        const generateHash = data => {
+            const hashString = `${process.env.EASEBUZZ_KEY_TEST}|${merchant_txn}|${process.env.EASEBUZZ_SALT_TEST}`;
+            return crypto.createHash('sha512').update(hashString).digest('hex');
+        };
+
+
+        // API Call
+        try {
+            const url = `https://testdashboard.easebuzz.in/easycollect/v1/get?key=${process.env.EASEBUZZ_KEY_TEST}&merchant_txn=${merchant_txn}&hash=${generateHash()}`;
+            const easebuzzRes = await axios.get(url, {
+                headers:{
+                  'Accept':'application/json'
+                }
+            });
+            res.status(200).send({
+                status:easebuzzRes.data.data.state ? easebuzzRes.data.data.payment_made === 1 ? 'completed' : 'cancelled' : 'cancelled'
+            });
+            res.send(easebuzzRes.data);
         } catch (error) {
             res.status(500).send(error);
         }
@@ -393,6 +407,7 @@ router.post('/payment/insta-collect', async (req, res) => {
 
 
 
+// Insta collect status
 router.post('/payment/insta-collect-status', async (req, res) => {
     try {
 
@@ -450,75 +465,6 @@ router.post('/payment/insta-collect-status', async (req, res) => {
             error: 'An error occurred while retrieving the order',
         });
     }
-});
-
-
-
-
-
-router.post('/payment/status', async (req, res) => {
-    try {
-
-        // Request body
-        const {txnId} = req.body;
-
-
-        // Empty transaction id validation
-        if (!txnId) {
-            return res.status(400).json({
-                success:false,
-                error:'Transaction ID (txn_id) is required',
-            });
-        };
-
-
-        // Merchnat key and salt
-        const MERCHANT_KEY = process.env.EASEBUZZ_KEY_TEST;
-        const MERCHANT_SALT = process.env.EASEBUZZ_SALT_TEST;
-
-
-        // Hash string
-        const hashString = `${MERCHANT_KEY}|${txnId}|${MERCHANT_SALT}`;
-        const hash = crypto.createHash('sha512').update(hashString).digest('hex');
-
-
-        // Params for the post request
-        const postData = new URLSearchParams({
-            key:MERCHANT_KEY,
-            txnid:txnId,
-            hash:hash
-        });
-
-
-        // Post request
-        const response = await axios.post(
-            'https://testdashboard.easebuzz.in/transaction/v2.1/retrieve',
-            postData.toString(),
-            {
-                headers: {
-                    'Content-Type':'application/x-www-form-urlencoded',
-                }
-            }
-        );
-        
-        
-        // Response
-        if(response?.data?.msg === 'Transaction not found'){
-            res.status(200).send('Transaction not found');
-        }else if(response?.data?.msg.length > 0 && response?.data?.msg[0]?.status === 'success'){
-            res.status(200).send({
-                status:'success',
-                amount:response?.data?.msg[0]?.amount
-            });
-        }else if(response?.data?.msg.length > 0 && response?.data?.msg[0]?.status === 'failure'){
-            res.status(200).send({
-                status:'failure'
-            });
-        };
-
-    }catch(error){
-        res.status(500).json(error);
-    };
 });
 
 
