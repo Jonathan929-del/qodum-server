@@ -243,7 +243,7 @@ router.post('/payment/easy-pay', async (req, res) => {
 
         // Generate hash
         const generateHash = data => {
-            const hashString = `${data.key}|${data.merchant_txn}|${data.name}|${data.email}|${data.phone}|${data.amount}|||||||${process.env.EASEBUZZ_SALT_TEST}`;
+            const hashString = `${data.key}|${data.merchant_txn}|${data.name}|${data.email}|${data.phone}|${data.amount}|||||||${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
@@ -251,7 +251,7 @@ router.post('/payment/easy-pay', async (req, res) => {
         // Hash data
         const hashData = {
             merchant_txn,
-            key:process.env.EASEBUZZ_KEY_TEST,
+            key:process.env.EASEBUZZ_KEY,
             email,
             name,
             amount,
@@ -262,7 +262,7 @@ router.post('/payment/easy-pay', async (req, res) => {
 
         // API call
         try {
-            const easebuzzRes = await axios.post('https://testdashboard.easebuzz.in/easycollect/v1/create', hashData);
+            const easebuzzRes = await axios.post('https://dashboard.easebuzz.in/easycollect/v1/create', hashData);
             res.status(200).send(easebuzzRes.data.data.payment_url || 'error');
         } catch (error) {
             res.status(500).send(error);
@@ -293,14 +293,14 @@ router.post('/payment/check-easy-pay', async (req, res) => {
 
         // Generate hash
         const generateHash = data => {
-            const hashString = `${process.env.EASEBUZZ_KEY_TEST}|${merchant_txn}|${process.env.EASEBUZZ_SALT_TEST}`;
+            const hashString = `${process.env.EASEBUZZ_KEY_TEST}|${merchant_txn}|${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
 
         // API Call
         try {
-            const url = `https://testdashboard.easebuzz.in/easycollect/v1/get?key=${process.env.EASEBUZZ_KEY_TEST}&merchant_txn=${merchant_txn}&hash=${generateHash()}`;
+            const url = `https://dashboard.easebuzz.in/easycollect/v1/get?key=${process.env.EASEBUZZ_KEY}&merchant_txn=${merchant_txn}&hash=${generateHash()}`;
             const easebuzzRes = await axios.get(url, {
                 headers:{
                   'Accept':'application/json'
