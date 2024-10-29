@@ -29,6 +29,14 @@ let isOTPVerified = false;
 
 
 
+// Mobile OTP
+let mobile_otp;
+let isMobileOTPVerified = false;
+
+
+
+
+
 // Fetching student by adm no and sending OTP to the registered phone number
 router.post('/student/send-otp', async (req, res) => {
     try {
@@ -487,6 +495,108 @@ router.post('/student/apply-for-admission', async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Send mobile OTP
+router.post('/student/send-mobile-otp', async (req, res) => {
+    try {
+
+        // Admission number
+        const {mobile} = req.body;
+
+
+        // Validation
+        if(!mobile || Math.abs(mobile).toString().length !== 10){
+            res.send({
+                status:'failure',
+                message:'Please provide a valid mobile number'
+            });
+            return;
+        };
+
+
+        // Sending SMS
+        const generateOTP = 111111;
+        // const generateOTP = Math.random().toString().substr(2, 6);
+
+
+        // Setting OTP
+        mobile_otp = generateOTP;
+
+
+        // OTP timeount
+        setTimeout(() => {
+            mobile_otp = '';
+            isMobileOTPVerified = false;
+        }, 3600000);
+
+
+        // Response
+        res.status(200).send({
+            status:'success',
+            message:'OTP sent successfully'
+        });
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
+// Check mobile OTP
+router.post('/student/check-mobile-otp', async (req, res) => {
+    try {
+
+        // Request body
+        const {the_otp} = req.body;
+        
+        
+        // Validations
+        if(!mobile_otp){
+            res.send({
+                status:'failure',
+                message:'OTP timeout'
+            });
+            return;
+        };
+        const isOtpsEqual = the_otp === mobile_otp;
+        if(!the_otp){
+            res.send({
+                status:'failure',
+                message:'OTP not provided'
+            });
+            return;
+        };
+        if(!isOtpsEqual){
+            res.send({
+                status:'failure',
+                message:"OTPs don't match"
+            });
+            return;
+        };
+
+
+        // Setting is otp to be verified
+        isMobileOTPVerified = true;
+
+
+        // Response
+        res.status(200).send({
+            status:'success',
+            message:'Checked successfully'
+        });
+
+
+    } catch (err) {
+        res.status(500).json(err.message);
     }
 });
 
