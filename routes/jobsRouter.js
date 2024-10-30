@@ -33,5 +33,25 @@ router.get('/names', async (req, res) => {
 
 
 
+// Fetching jobs
+router.get('/', async (req, res) => {
+    try {
+
+        // Jobs
+        const jobs = await Job.find({});
+
+
+        // Response
+        res.status(200).json(jobs);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
