@@ -194,3 +194,36 @@ export const validateCandidateApplication = ({
         valid:Object.keys(errors).length < 1
     };
 };
+
+
+
+
+
+// Validate alumni page
+export const validateAlumni = ({
+    first_name,
+    mobile,
+    year_of_passing,
+    zip_code
+}) => {
+    const errors = {};
+    const containsOnlyNumbers = str => {
+        return /^\d+$/.test(str);
+    };
+    if(!first_name){
+        errors.message = 'Please enter first name';
+    };
+    if(!containsOnlyNumbers(mobile)){
+        errors.message = 'Please enter a valid mobile no.';
+    };
+    if(!containsOnlyNumbers(year_of_passing)){
+        errors.message = 'Please enter a valid year of passing';
+    };
+    if(!containsOnlyNumbers(zip_code)){
+        errors.message = 'Please enter a valid zip code';
+    };
+    return {
+        errors,
+        valid:Object.keys(errors).length < 1
+    };
+};
