@@ -48,6 +48,37 @@ router.post('/find', async (req, res) => {
 
 
 
+// Update school data to the app
+router.post('/update', async (req, res) => {
+    try {
+
+        // Body
+        const {id} = req.body;
+
+
+        // Validation
+        if(!id){
+            res.send('No ID provided');
+            return;
+        };
+
+
+        // Schools
+        const school = await School.findById(id);
+
+
+        // Response
+        res.status(200).json(school);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Fetching school by school no.
 router.post('/school', async (req, res) => {
     try {
