@@ -40,10 +40,6 @@ router.post('/teacher/send-otp', async (req, res) => {
             return;
         };
         const existingUser = await AppTeacher.findOne({adm_no});
-        if(existingUser){
-            res.send('User already registered');
-            return;
-        };
         const teacherRes = await Teacher.findOne({adm_no});
         if(!teacherRes){
             res.send('No teachers found with this admission number');
