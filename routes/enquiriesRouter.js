@@ -93,5 +93,46 @@ router.post('/create', async (req, res) => {
 
 
 
+// Create enquiry
+router.post('/modify', async (req, res) => {
+    try {
+
+        // Request body
+        const {
+            id,
+            visitor_name,
+            visitor_address,
+            mobile_no,
+            student_name,
+            class_name
+        } = req.body;
+
+
+        // Creating
+        const newEnquiry = await Enquiry.findByIdAndUpdate(id, {
+            visitor_name,
+            visitor_address,
+            mobile_no,
+            student_name,
+            class_name
+        });
+
+
+        // Response
+        res.status(200).json({
+            status:'success',
+            message:'Enquiry modified successfully!',
+            enquiry:newEnquiry
+        });
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
