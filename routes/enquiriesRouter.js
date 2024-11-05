@@ -115,7 +115,7 @@ router.post('/modify', async (req, res) => {
             mobile_no,
             student_name,
             class_name
-        });
+        }, {new:true});
 
 
         // Response
