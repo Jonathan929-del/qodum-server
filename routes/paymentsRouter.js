@@ -163,7 +163,8 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
         // Generate hash
         const generateHash = data => {
-            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT}`;
+            const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT_TEST}`;
+            // const hashString = `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|${data.firstname}|${data.email}|||||||||||${process.env.EASEBUZZ_SALT}`;
             return crypto.createHash('sha512').update(hashString).digest('hex');
         };
 
@@ -171,7 +172,8 @@ router.post('/payment/initiate-payment', async (req, res) => {
         // Hash data
         const hashData = {
             txnid,
-            key:process.env.EASEBUZZ_KEY,
+            key:process.env.EASEBUZZ_KEY_TEST,
+            // key:process.env.EASEBUZZ_KEY,
             email,
             firstname,
             amount,
@@ -189,12 +191,13 @@ router.post('/payment/initiate-payment', async (req, res) => {
 
         // API call
         try {
-            const easebuzzRes = await axios.post('https://pay.easebuzz.in/payment/initiateLink', postData);
+            const easebuzzRes = await axios.post('https://testpay.easebuzz.in/payment/initiateLink', postData);
+            // const easebuzzRes = await axios.post('https://pay.easebuzz.in/payment/initiateLink', postData);
             res.status(200).send(easebuzzRes.data);
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
-        }
+        };
 
     }catch(err){
         console.log(err);
