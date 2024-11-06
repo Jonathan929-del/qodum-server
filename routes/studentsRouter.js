@@ -305,8 +305,13 @@ router.post('/student/apply-for-admission', async (req, res) => {
         }else if(students >= 999999){
             substringValue = 6;
         };
-        const admissionNumber = await Admission.findOne({setting_type:'Registration No. (Online)'});
+        const admissionNumber = await Admission.findOne({setting_type:'Registration No.'});
         const newAdmissionNo = admissionNumber ? `${admissionNumber?.prefix}${admissionNumber?.lead_zero.substring(substringValue, admissionNumber?.lead_zero?.length - 1)}${students + 1}${admissionNumber?.suffix}` : '';
+        if(!newAdmissionNo){
+            errors.status = 'failure';
+            res.send(errors);
+            return;
+        };
 
 
         // Registering the student
