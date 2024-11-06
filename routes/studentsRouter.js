@@ -249,7 +249,8 @@ router.post('/student/apply-for-admission', async (req, res) => {
             city,
             state,
             last_school_name,
-            last_class
+            last_class,
+            amount
         } = req.body;
 
 
@@ -330,7 +331,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
                 enquiry_no:'',
                 reg_no:newAdmissionNo,
                 pros_no:'',
-                amount:0,
+                amount,
                 date:new Date(),
                 payment_mode:'',
                 admission_account:'',
