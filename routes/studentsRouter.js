@@ -250,7 +250,8 @@ router.post('/student/apply-for-admission', async (req, res) => {
             state,
             last_school_name,
             last_class,
-            amount
+            amount,
+            mobile
         } = req.body;
 
 
@@ -355,7 +356,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
                 h_no_and_streets:address,
                 email,
                 city,
-                mobile:0,
+                mobile,
                 state,
                 pin_code:0,
                 aadhar_card_no:0,
