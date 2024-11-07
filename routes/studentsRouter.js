@@ -736,5 +736,39 @@ router.get('/adm-nos', async (req, res) => {
 
 
 
+// Fetch student by mobile number
+router.post('/mobile', async (req, res) => {
+    try {
+
+        // Request body
+        const {mobile} = req.body;
+
+
+        // Validation
+        if(!mobile){
+            res.status(400).send('Please provide a mobile number');
+        };
+
+
+        // Active Academic Year
+        const activeAcademicYear = await AcademicYear.findOne({is_active:true});
+
+
+        // Students
+        const students = await Student.find({session:activeAcademicYear.year_name, 'student.mobile':mobile});
+
+
+        // Response
+        res.status(200).json(students);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
