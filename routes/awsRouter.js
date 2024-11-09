@@ -23,7 +23,7 @@ const s3 = new AWS.S3({
 
 
 // Last payment
-router.post('/image', upload.single('file'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
     try {
 
         // Request body
