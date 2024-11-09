@@ -13,7 +13,10 @@ dotenv.config();
 const router = express.Router();
 // Multer storage
 const storage = multer.memoryStorage();
-const upload = multer({storage});
+const upload = multer({ 
+    storage:storage,
+    limits:{fileSize:500 * 1024}
+});
 // AWS credentials
 const s3Client = new S3Client({
     region:process.env.AWS_REGION,
@@ -31,41 +34,55 @@ const s3Client = new S3Client({
 router.put('/upload', upload.single('file'), async (req, res) => {
     try {
 
-        // Request body
+        // Request body: folder
         const {folder} = req.body;
 
     
-        // Validation
-        if(!req.file){
-            return res.send({
+        // Validations
+        if (!req.file) {
+            return res.status(400).send({
                 status:'failure',
-                message:'Please provide a file'
+                message:'Please provide a file.'
+            });
+        };
+        const validFormats = ['image/jpeg', 'image/png', 'image/jpg'];
+        const mimeType = req.file.mimetype;
+        if (!validFormats.includes(mimeType)) {
+            return res.status(400).send({
+                status:'failure',
+                message:'Invalid format. Please select a JPEG or PNG image.'
+            });
+        };
+        if(req.file.size > 500 * 1024){
+            return res.status(400).send({
+                status:'failure',
+                message:'File too large. Please select an image smaller than 500KB.'
             });
         };
 
 
-        const {file} = req;
-        const fileName = `${folder}/${Date.now()}_${file.originalname}`;
-    
-    
-        // Prepare S3 upload parameters
+        // File name
+        const fileName = `${folder}/${Date.now()}_${req.file.originalname}`;
+
+
+        // Upload parameters
         const params = {
             Bucket:process.env.AWS_BUCKET_NAME,
             Key:encodeURI(fileName),
-            Body:file.buffer,
-            ContentType:file.mimetype
+            Body:req.file.buffer,
+            ContentType:mimeType
         };
-    
-    
+
+
         // Upload the file to S3
         await s3Client.send(new PutObjectCommand(params));
-    
 
-        // Respond with success
+
+        // Response
         res.status(201).json({
             status:'success',
             message:'File uploaded successfully',
-            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURI(fileName + Date.now())}`
+            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURI(fileName)}`
         });
 
     }catch(err){
@@ -77,6 +94,7 @@ router.put('/upload', upload.single('file'), async (req, res) => {
         });
     };
 });
+
 
 
 
