@@ -18,7 +18,8 @@ const s3Client = new S3Client({
     credentials:{
         accessKeyId:process.env.AWS_ACCESS_KEY,
         secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY
-    }
+        // secretAccessKey:'8YEPxmp4ZndtNxbcJILpPJwAi4VXEC+UBhJIBoKD'
+    } 
 });
 
 
@@ -26,7 +27,7 @@ const s3Client = new S3Client({
 
 
 // Upload
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.put('/upload', upload.single('file'), async (req, res) => {
     try {
 
         // Request body
@@ -49,21 +50,21 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         // Prepare S3 upload parameters
         const params = {
             Bucket:process.env.AWS_BUCKET_NAME,
-            Key:fileName,
+            Key:encodeURI(fileName),
             Body:file.buffer,
             ContentType:file.mimetype
         };
     
     
         // Upload the file to S3
-        const data = await s3Client.send(new PutObjectCommand(params));
+        await s3Client.send(new PutObjectCommand(params));
     
 
         // Respond with success
-        res.json({
+        res.status(201).json({
             status:'success',
             message:'File uploaded successfully',
-            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURI(fileName)}`
+            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURI(fileName + Date.now())}`
         });
 
     }catch(err){
