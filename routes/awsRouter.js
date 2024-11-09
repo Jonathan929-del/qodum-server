@@ -1,5 +1,6 @@
 // Imports
 import multer from 'multer';
+import dotenv from 'dotenv';
 import express from 'express';
 import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 
@@ -8,6 +9,7 @@ import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 
 
 // Defining router
+dotenv.config();
 const router = express.Router();
 // Multer storage
 const storage = multer.memoryStorage();
@@ -17,9 +19,8 @@ const s3Client = new S3Client({
     region:process.env.AWS_REGION,
     credentials:{
         accessKeyId:process.env.AWS_ACCESS_KEY,
-        secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY
-        // secretAccessKey:'8YEPxmp4ZndtNxbcJILpPJwAi4VXEC+UBhJIBoKD'
-    } 
+        secretAccessKey:process.env.AWS_PERMENANT_SECRET_ACCESS_KEY
+    }
 });
 
 
