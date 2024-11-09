@@ -1,7 +1,7 @@
 // Imports
-import AWS from 'aws-sdk';
 import multer from 'multer';
 import express from 'express';
+import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 
 
 
@@ -10,19 +10,22 @@ import express from 'express';
 // Defining router
 const router = express.Router();
 // Multer storage
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = multer.memoryStorage();
+const upload = multer({storage});
 // AWS credentials
-const s3 = new AWS.S3({
-    accessKeyId:process.env.AWS_ACCESS_KEY,
-    secretAccessKey:process.env.AWS_SECRET_KEY,
-    region:process.env.AWS_REGION
+const s3Client = new S3Client({
+    region:process.env.AWS_REGION,
+    credentials:{
+        accessKeyId:process.env.AWS_ACCESS_KEY,
+        secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY
+    }
 });
 
 
 
 
 
-// Last payment
+// Upload
 router.post('/upload', upload.single('file'), async (req, res) => {
     try {
 
@@ -39,32 +42,38 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         };
 
 
-        // File data
-        const fileContent = req.file.buffer;
-        const fileName = `${folder || 'uploads'}/${Date.now()}_${req.file.originalname}`;
-        const contentType = req.file.mimetype;
-
-
-        // Params
+        const {file} = req;
+        const fileName = `${folder}/${Date.now()}_${file.originalname}`;
+    
+    
+        // Prepare S3 upload parameters
         const params = {
             Bucket:process.env.AWS_BUCKET_NAME,
             Key:fileName,
-            Body:fileContent,
-            ContentType:contentType
+            Body:file.buffer,
+            ContentType:file.mimetype
         };
+    
+    
+        // Upload the file to S3
+        const data = await s3Client.send(new PutObjectCommand(params));
+    
 
-
-        // Upload to S3
-        const data = await s3.upload(params).promise();
+        // Respond with success
         res.json({
             status:'success',
             message:'File uploaded successfully',
-            url:data.Location
+            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURI(fileName)}`
         });
 
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    }catch(err){
+        console.error('Error uploading file:', err);
+        res.status(500).json({
+            status:'failure',
+            message:'Error uploading file to S3',
+            error:err.message
+        });
+    };
 });
 
 
