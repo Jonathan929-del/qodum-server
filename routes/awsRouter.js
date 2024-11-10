@@ -31,7 +31,7 @@ const s3Client = new S3Client({
 
 
 // Upload
-router.put('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
     try {
 
         // Request body: folder
@@ -40,7 +40,7 @@ router.put('/upload', upload.single('file'), async (req, res) => {
     
         // Validations
         if (!req.file) {
-            return res.status(400).send({
+            res.send({
                 status:'failure',
                 message:'Please provide a file.'
             });
@@ -48,13 +48,13 @@ router.put('/upload', upload.single('file'), async (req, res) => {
         const validFormats = ['image/jpeg', 'image/png', 'image/jpg'];
         const mimeType = req.file.mimetype;
         if (!validFormats.includes(mimeType)) {
-            return res.status(400).send({
+            res.send({
                 status:'failure',
                 message:'Invalid format. Please select a JPEG or PNG image.'
             });
         };
         if(req.file.size > 500 * 1024){
-            return res.status(400).send({
+            res.send({
                 status:'failure',
                 message:'File too large. Please select an image smaller than 500KB.'
             });
@@ -87,13 +87,15 @@ router.put('/upload', upload.single('file'), async (req, res) => {
 
     }catch(err){
         console.error('Error uploading file:', err);
-        res.status(500).json({
+        res.json({
             status:'failure',
             message:'Error uploading file to S3',
             error:err.message
         });
     };
 });
+
+
 
 
 
