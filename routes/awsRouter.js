@@ -95,10 +95,12 @@ const s3Client = new S3Client({
 //         });
 //     };
 // });
-router.post('/upload', async (req, res) => {
+router.post('/upload/image', async (req, res) => {
     try {
-        // Request body: folder and file (Base64-encoded)
+
+        // Body
         const {folder, file} = req.body;
+
 
         // Validations
         if(!file){
