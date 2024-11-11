@@ -1,5 +1,4 @@
 // Imports
-import multer from 'multer';
 import dotenv from 'dotenv';
 import express from 'express';
 import {Buffer} from 'buffer';
@@ -12,12 +11,6 @@ import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 // Defining router
 dotenv.config();
 const router = express.Router();
-// Multer storage
-const storage = multer.memoryStorage();
-const upload = multer({ 
-    storage:storage,
-    limits:{fileSize:500 * 1024}
-});
 // AWS credentials
 const s3Client = new S3Client({
     region:process.env.AWS_REGION,
@@ -31,70 +24,7 @@ const s3Client = new S3Client({
 
 
 
-// Upload
-// router.post('/upload', upload.single('file'), async (req, res) => {
-//     try {
-
-//         // Request body: folder
-//         const {folder} = req.body;
-
-    
-//         // Validations
-//         if (!req.file) {
-//             res.send({
-//                 status:'failure',
-//                 message:'Please provide a file.'
-//             });
-//         };
-//         const validFormats = ['image/jpeg', 'image/png', 'image/jpg'];
-//         const mimeType = req.file.mimetype;
-//         if (!validFormats.includes(mimeType)) {
-//             res.send({
-//                 status:'failure',
-//                 message:'Invalid format. Please select a JPEG or PNG image.'
-//             });
-//         };
-//         if(req.file.size > 500 * 1024){
-//             res.send({
-//                 status:'failure',
-//                 message:'File too large. Please select an image smaller than 500KB.'
-//             });
-//         };
-
-
-//         // File name
-//         const fileName = `${folder}/${Date.now()}_${req.file.originalname}`;
-
-
-//         // Upload parameters
-//         const params = {
-//             Bucket:process.env.AWS_BUCKET_NAME,
-//             Key:fileName.replace(/\s+/g, ''),
-//             Body:req.file.buffer,
-//             ContentType:mimeType
-//         };
-
-
-//         // Upload the file to S3
-//         await s3Client.send(new PutObjectCommand(params));
-
-
-//         // Response
-//         res.status(201).json({
-//             status:'success',
-//             message:'File uploaded successfully',
-//             url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName.replace(/\s+/g, '')}`
-//         });
-
-//     }catch(err){
-//         console.error('Error uploading file:', err);
-//         res.json({
-//             status:'failure',
-//             message:'Error uploading file to S3',
-//             error:err.message
-//         });
-//     };
-// });
+// Upload image
 router.post('/upload/image', async (req, res) => {
     try {
 
@@ -177,6 +107,82 @@ router.post('/upload/image', async (req, res) => {
             error:err.message
         });
     };
+});
+
+
+
+
+
+// Upload PDF file
+router.post('/upload/pdf', async (req, res) => {
+    try {
+
+        // Body
+        const {folder, file} = req.body;
+
+
+        // Validations
+        if (!file) {
+            return res.status(400).send({
+                status:'failure',
+                message:'Please provide a file.',
+            });
+        };
+        if(!folder){
+            return res.status(400).send({
+                status:'failure',
+                message:'Please specify a folder.',
+            });
+        };
+        // Ensure the file is a valid PDF
+        const match = file.match(/^data:application\/pdf;base64,/);
+        if(!match){
+            return res.status(400).send({
+                status: 'failure',
+                message: 'Invalid file format. Expected Base64 encoded PDF.',
+            });
+        };
+        const base64Data = file.replace(/^data:application\/pdf;base64,/, '');
+        const fileBuffer = Buffer.from(base64Data, 'base64');
+        if(fileBuffer.length > 5 * 1024 * 1024){
+            return res.status(400).send({
+                status:'failure',
+                message:'File too large. Please select a PDF smaller than 5MB.',
+            });
+        };
+
+
+        // File name
+        const fileName = `${folder}/${Date.now()}_document.pdf`;
+
+
+        // Upload parameters
+        const params = {
+            Bucket:process.env.AWS_BUCKET_NAME,
+            Key:fileName.replace(/\s+/g, ''),
+            Body:fileBuffer,
+            ContentType:'application/pdf'
+        };
+
+
+        // Upload the file to S3
+        await s3Client.send(new PutObjectCommand(params));
+
+
+        // Response
+        res.status(201).json({
+            status:'success',
+            message:'PDF uploaded successfully',
+            url:`https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName.replace(/\s+/g, '')}`
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            status:'failure',
+            message:'Error uploading PDF to S3',
+            error:err.message
+        });
+    }
 });
 
 
