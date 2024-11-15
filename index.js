@@ -38,11 +38,11 @@ import awsRouter from './routes/awsRouter.js';
 // Middleware
 dotenv.config();
 const app = express();
+app.use(express.json({limit:'50mb'}));
+app.use(express.urlencoded({limit:'50mb', extended:true}));
 app.use(cors({origin:'*'}));
-app.use(express.json());
 app.use(morgan('common'));
 app.use(bodyParser.json());
-app.use(express.urlencoded({extended:true}));
 app.use(bodyParser.urlencoded({extended:false}));
 
 

@@ -10,6 +10,8 @@ import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 
 // Defining router
 dotenv.config();
+express.json({limit:'10mb'});
+express.urlencoded({limit:'10mb', extended:true});
 const router = express.Router();
 // AWS credentials
 const s3Client = new S3Client({
@@ -30,6 +32,8 @@ router.post('/upload/image', async (req, res) => {
 
         // Body
         const {folder, file} = req.body;
+        console.log(file);
+        console.log('Content-Length:', req.headers['content-length']);
 
 
         // Validations
@@ -68,10 +72,10 @@ router.post('/upload/image', async (req, res) => {
 
 
         // Check file size
-        if (fileBuffer.length > 500 * 1024) {
+        if (fileBuffer.length > 100 * 1024) {
             return res.status(400).send({
                 status:'failure',
-                message:'File too large. Please select an image smaller than 500KB.',
+                message:'File too large. Please select an image smaller than 100KB.',
             });
         };
 
