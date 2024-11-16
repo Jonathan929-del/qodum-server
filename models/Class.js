@@ -16,7 +16,8 @@ const ClassSchema = new mongoose.Schema(
             affiliated_heads:{
                 group_name:{type:String},
                 heads:{type:Array}
-            }
+            },
+            is_admission_opened:{type:Boolean}
         },
         {
             timestamps:true

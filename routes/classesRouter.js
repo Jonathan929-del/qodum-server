@@ -34,6 +34,26 @@ router.get('/names', async (req, res) => {
 
 
 
+// Fetching classes names
+router.get('/open-classes', async (req, res) => {
+    try {
+
+        // Classes
+        const classes = await Class.find({is_admission_opened:true}, {class_name:1});
+
+
+        // Response
+        res.status(200).json(classes);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Fetching number of students in a class
 router.post('/class/student-count', async (req, res) => {
     try {
