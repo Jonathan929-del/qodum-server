@@ -755,7 +755,7 @@ router.post('/mobile', async (req, res) => {
 
 
         // Students
-        const students = await Student.find({session:activeAcademicYear.year_name, 'student.mobile':mobile});
+        const students = await Student.find({session:activeAcademicYear.year_name, 'student.contact_person_mobile':mobile});
 
 
         // Response
