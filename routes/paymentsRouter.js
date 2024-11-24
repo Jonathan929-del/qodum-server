@@ -355,7 +355,7 @@ router.post('/payment/insta-collect', async (req, res) => {
         // Constants
         const key = process.env.NEW_EASEBUZZ_KEY;
         const salt = process.env.NEW_EASEBUZZ_SALT;
-        const per_transaction_amount = 1;
+        const per_transaction_amount = amount;
         const udf1 = 'customValue1'; 
         const udf2 = 'customValue2'; 
         const udf3 = 'customValue3'; 
@@ -396,7 +396,7 @@ router.post('/payment/insta-collect', async (req, res) => {
         // Make the POST request
         const response = await axios.post('https://wire.easebuzz.in/api/v1/insta-collect/order/create/', data, {headers});
         if(!response.data.success){
-            res.status(200).send({success:false, message:'Order already exists with same Unique Request Number.'});
+            res.status(200).send(response.data);
         }else if(response.data.success){
             res.status(200).send({success:true, payment_url:response.data.data.transaction_order.virtual_account.upi_qrcode_url, order_id:response.data.data.transaction_order.id});
         };
