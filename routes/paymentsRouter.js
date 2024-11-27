@@ -5,6 +5,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Payment from '../models/Payment.js';
 import AcademicYear from '../models/AcademicYear.js';
+import FeeEntrySetting from '../models/FeeEntrySetting.js';
 
 
 
@@ -30,7 +31,6 @@ router.post('/payment/create', async (req, res) => {
 
             // School data
             school_name,
-            receipt_no,
             school_address,
             website,
             school_no,
@@ -64,6 +64,35 @@ router.post('/payment/create', async (req, res) => {
         const activeAcademicYear = await AcademicYear.findOne({is_active:true});
 
 
+
+        // Generating new payment receipt no.
+        const paymentsLength = await Payment.countDocuments();
+        const feeEntrySettings = await FeeEntrySetting.find();
+        const number = feeEntrySettings[0];
+        let substringValue;
+        if(paymentsLength < 9){
+            substringValue = 0;
+        }else if(paymentsLength >= 9){
+            substringValue = 1;
+        }else if(paymentsLength >= 99){
+            substringValue = 2;
+        }else if(paymentsLength >= 999){
+            substringValue = 3;
+        }else if(paymentsLength >= 9999){
+            substringValue = 4;
+        }else if(paymentsLength >= 99999){
+            substringValue = 5;
+        }else if(paymentsLength >= 999999){
+            substringValue = 6;
+        };
+        if(number){
+            console.log(number);
+            setPaymentReceiptNo(`${number?.prefix || ''}${number?.lead_zero?.substring(substringValue, number?.lead_zero?.length - 1) || ''}${paymentsLength + 1}${number?.suffix || ''}`);
+        }else{
+            setPaymentReceiptNo(String(Math.floor(Math.random() * 1000000)));
+        };
+
+
         // Creating payment
         await Payment.create({
             // Session
@@ -71,7 +100,7 @@ router.post('/payment/create', async (req, res) => {
 
             // School data
             school_name,
-            receipt_no,
+            receipt_no:number,
             school_address,
             website,
             school_no,
