@@ -64,7 +64,6 @@ router.post('/payment/create', async (req, res) => {
         const activeAcademicYear = await AcademicYear.findOne({is_active:true});
 
 
-
         // Generating new payment receipt no.
         const paymentsLength = await Payment.countDocuments();
         const feeEntrySettings = await FeeEntrySetting.find();
@@ -85,12 +84,6 @@ router.post('/payment/create', async (req, res) => {
         }else if(paymentsLength >= 999999){
             substringValue = 6;
         };
-        if(number){
-            console.log(number);
-            setPaymentReceiptNo(`${number?.prefix || ''}${number?.lead_zero?.substring(substringValue, number?.lead_zero?.length - 1) || ''}${paymentsLength + 1}${number?.suffix || ''}`);
-        }else{
-            setPaymentReceiptNo(String(Math.floor(Math.random() * 1000000)));
-        };
 
 
         // Creating payment
@@ -100,7 +93,7 @@ router.post('/payment/create', async (req, res) => {
 
             // School data
             school_name,
-            receipt_no:number,
+            receipt_no:number ? `${number?.prefix || ''}${number?.lead_zero?.substring(substringValue, number?.lead_zero?.length - 1) || ''}${paymentsLength + 1}${number?.suffix || ''}` : String(Math.floor(Math.random() * 1000000)),
             school_address,
             website,
             school_no,
