@@ -96,6 +96,7 @@ router.post('/payment/create', async (req, res) => {
             actual_amount,
             paid_amount,
             paid_heads,
+            paymode
         });
 
 
