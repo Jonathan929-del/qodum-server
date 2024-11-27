@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import express from 'express';
 import bodyParser from 'body-parser';
 import Payment from '../models/Payment.js';
+import AcademicYear from '../models/AcademicYear.js';
 
 
 
@@ -58,8 +59,15 @@ router.post('/payment/create', async (req, res) => {
         } = req.body;
 
 
+        // Academic Years
+        const activeAcademicYear = await AcademicYear.findOne({is_active:true});
+
+
         // Creating payment
         await Payment.create({
+            // Session
+            session:activeAcademicYear.year_name,
+
             // School data
             school_name,
             receipt_no,

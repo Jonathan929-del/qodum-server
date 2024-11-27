@@ -283,7 +283,7 @@ router.post('/student/apply-for-admission', async (req, res) => {
 
 
         // Academic Years
-        const activeAcademicYear = await AcademicYear.findOne({is_active:true});
+        const activeAcademicYear = await AcademicYear.findOne({is_active:true});s
 
 
         // Students
