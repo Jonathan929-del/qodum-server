@@ -135,6 +135,30 @@ router.post('/payment/create', async (req, res) => {
 
 
 
+// Student payments
+router.post('/student', async (req, res) => {
+    try {
+
+        // Request body
+        const {adm_no} = req.body;
+
+
+        // Payments
+        const payments = await Payment.find({adm_no}).sort({received_date:-1});
+
+
+        // Reponse
+        res.status(200).send(payments);
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Last payment
 router.post('/payment/last-payment', async (req, res) => {
     try {
