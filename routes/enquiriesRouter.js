@@ -142,10 +142,6 @@ router.delete('/delete', async (req, res) => {
         const {id} = req.body;
 
 
-        // ID check
-        if(!id) res.send({status:'failure', message:'Please provide an ID'});
-
-
         // Enquiry check
         const enquiry = await Enquiry.findById(id);
         if(!enquiry){
