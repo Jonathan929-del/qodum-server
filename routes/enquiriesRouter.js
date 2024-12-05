@@ -135,7 +135,7 @@ router.post('/modify', async (req, res) => {
 
 
 // Delete enquiry
-router.delete('/delete', async (req, res) => {
+router.post('/delete', async (req, res) => {
     try {
 
         // Request body
