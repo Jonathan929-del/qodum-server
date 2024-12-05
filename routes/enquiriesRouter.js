@@ -146,17 +146,18 @@ router.delete('/delete', async (req, res) => {
         if(!id) res.send({status:'failure', message:'Please provide an ID'});
 
 
-        // Creating
-        const enquiry = await Enquiry.findByIdAndDelete(id);
-
-
-        // Checking enquiry exists
+        // Enquiry check
+        const enquiry = await Enquiry.findById(id);
         if(!enquiry){
             res.json({
                 status:'failure',
                 message:'No enquiries found with this ID'
             });
         };
+
+
+        // Deleting
+        await Enquiry.findByIdAndDelete(id);
 
 
         // Response
