@@ -134,5 +134,45 @@ router.post('/modify', async (req, res) => {
 
 
 
+// Delete enquiry
+router.delete('/delete', async (req, res) => {
+    try {
+
+        // Request body
+        const {id} = req.body;
+
+
+        // ID check
+        if(!id) res.send({status:'failure', message:'Please provide an ID'});
+
+
+        // Creating
+        const enquiry = await Enquiry.findByIdAndDelete(id);
+
+
+        // Checking enquiry exists
+        if(!enquiry){
+            res.json({
+                status:'failure',
+                message:'No enquiries found with this ID'
+            });
+        };
+
+
+        // Response
+        res.status(200).json({
+            status:'success',
+            message:'Enquiry deleted successfully!'
+        });
+
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+
+
+
 // Export
 export default router;
