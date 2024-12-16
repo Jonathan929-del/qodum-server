@@ -252,13 +252,11 @@ router.post('/payment/initiate-payment', async (req, res) => {
             // const easebuzzRes = await axios.post('https://pay.easebuzz.in/payment/initiateLink', postData);
             res.status(200).send(easebuzzRes.data);
         } catch (error) {
-            console.log(error);
-            res.status(500).send(error);
+            res.status(200).send(error);
         };
 
     }catch(err){
-        console.log(err);
-        res.status(500).send(err);
+        res.status(200).send(err);
     }
 });
 
